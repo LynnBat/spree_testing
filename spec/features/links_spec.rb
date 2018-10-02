@@ -1,32 +1,32 @@
 describe 'links' do
-	before { visit '/' }
+  before { visit '/' }
 
-	it 'has Logo link' do 
-		find('#logo').find('a').click
-		expect(page.current_url).to eql "#{Capybara.app_host}/"
-	end
+  it 'has Logo link' do
+    find('#logo').find('a').click
+    expect(page.current_url).to eql "#{Capybara.app_host}/"
+  end
 
-	context 'header' do
-		it 'has Cart link' do
-			find('#link-to-cart').click
-			expect(page.current_url).to eql "#{Capybara.app_host}/cart"
-		end
+  context 'header' do
+    it 'has Cart link' do
+      find('#link-to-cart').click
+      expect(page.current_url).to eql "#{Capybara.app_host}/cart"
+    end
 
-		it 'has Home link' do
-			find('#home-link').click
-			expect(page.current_url).to eql "#{Capybara.app_host}/"
-		end
-	end
-
-	it 'has Taxonomies links' do
-		all('.list-group').count.times do |taxonomy_index|
-			items_amount = find_list_group_items(taxonomy_index).count
-			items_amount.times do |item_index|
-				list_group_item = find_list_group_items(taxonomy_index)[item_index]
-				list_group_item_name = list_group_item.text.downcase
-				list_group_item.click
-				expect(page.current_url).to eql "#{Capybara.app_host}/t/#{list_group_item_name}"
-			end
-		end   
+  it 'has Home link' do
+    find('#home-link').click
+    expect(page.current_url).to eql "#{Capybara.app_host}/"
   end
 end
+
+it 'has Taxonomies links' do
+  all('.list-group').count.times do |taxonomy_index|
+    items_amount = find_list_group_items(taxonomy_index).count
+    items_amount.times do |item_index|
+      list_group_item = find_list_group_items(taxonomy_index)[item_index]
+      list_group_item_name = list_group_item.text.downcase
+      list_group_item.click
+      expect(page.current_url).to eql "#{Capybara.app_host}/t/#{list_group_item_name}"
+      end
+    end
+    end
+  end
