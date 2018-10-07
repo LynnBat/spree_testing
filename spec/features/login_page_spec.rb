@@ -19,6 +19,7 @@ describe 'login_page' do
     fill_in 'spree_user_password', with: ENV['PASSWORD_SPREE']
     find_button('Login').click
     expect(page).to have_css('a', text: 'Logout')
+    find('a', text: 'Logout').click
   end
 
   it 'cannot Log in as a User' do
