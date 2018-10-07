@@ -33,5 +33,4 @@ describe 'login_page' do
   xit 'can Create New Account'
   xit 'cant create New Account with existing email'
   xit 'can Reset my Password'
-
 end
