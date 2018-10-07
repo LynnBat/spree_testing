@@ -26,7 +26,7 @@ end
 # - don't use rails server
 # - Use Safari as default
 # - Set up staging environment as default
-ENV['browser'] ||= 'safari'
+ENV['browser'] ||= 'chrome'
 Capybara.default_driver = case ENV['browser']
                           when 'chrome'
                             :chrome
@@ -43,6 +43,7 @@ Capybara.page.driver.browser.manage.window.maximize
 
 RSpec.configure do |config|
   config.include Capybara::DSL
+  config.include LinksHelper
 
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
