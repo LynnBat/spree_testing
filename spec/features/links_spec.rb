@@ -7,6 +7,11 @@ describe 'links' do
   end
 
   context 'header' do
+    it 'has Login link' do
+      find('#link-to-login').click
+      expect(page.current_url).to eql "#{Capybara.app_host}/login"
+    end
+
     it 'has Cart link' do
       find('#link-to-cart').click
       expect(page.current_url).to eql "#{Capybara.app_host}/cart"
