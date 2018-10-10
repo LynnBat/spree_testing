@@ -32,6 +32,16 @@ describe 'login_page' do
   xit 'remembers User'
   xit 'doesnt remeber User'
   xit 'can Create New Account'
-  xit 'cant create New Account with existing email'
+
+  it 'cant create New Account with existing email' do
+    find('a', text: 'Create a new account').click
+    fill_in 'spree_user_email', with: ENV['USERNAME_SPREE']
+    fill_in 'spree_user_password', with: ENV['PASSWORD_SPREE']
+    fill_in 'spree_user_password_confirmation', with: ENV['PASSWORD_SPREE']
+    find_button('Create').click
+    expect(find('.alert-danger').text).to match 'Email has already been taken'
+  end
+
+
   xit 'can Reset my Password'
 end
