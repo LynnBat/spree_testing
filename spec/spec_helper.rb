@@ -3,6 +3,7 @@ Bundler.require
 require 'capybara/dsl'
 require 'rspec/expectations'
 require 'faker'
+require 'show_me_the_cookies'
 
 # Adding helpers to all Specs
 Dir['./spec/helpers/**/*.rb'].each { |file| require file }
@@ -36,6 +37,8 @@ Capybara.default_driver = case ENV['browser']
                             :safari
                           end 
 
+ShowMeTheCookies.register_adapter(ENV['browser'].to_sym, ShowMeTheCookies::Selenium)
+
 Capybara.app_host = 'https://spree-qa-lynn.herokuapp.com'
 
 Capybara.run_server = false
@@ -44,6 +47,11 @@ Capybara.page.driver.browser.manage.window.maximize
 RSpec.configure do |config|
   config.include Capybara::DSL
   config.include LinksHelper
+  config.include ShowMeTheCookies
+
+  config.after do
+    Capybara.reset_sessions!
+  end
 
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
