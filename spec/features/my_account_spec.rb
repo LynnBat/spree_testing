@@ -49,6 +49,10 @@ describe 'my_account_page' do
     end
 
     it 'can change password' do
+      
+
+
+
       fill_in 'Email', with: email
       fill_in 'Password', with: ENV['PASSWORD_SPREE']
 
