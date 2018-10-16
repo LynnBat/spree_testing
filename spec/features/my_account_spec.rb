@@ -25,7 +25,7 @@ describe 'my_account_page' do
     end
   end
 
-
+  #I'll finish that part after writing tests for creating orders
     xit 'displays orders if there are some' do
       login(email, password)
 
