@@ -46,13 +46,14 @@ Capybara.page.driver.browser.manage.window.maximize
 
 RSpec.configure do |config|
   config.include Capybara::DSL
+  config.include MainHelper
   config.include LinksHelper
   config.include ShowMeTheCookies
 
   config.after do
     Capybara.reset_sessions!
   end
-
+  
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
   end 

@@ -1,81 +1,69 @@
 describe 'my_account_page' do
-  let(:email) { 'qwerty@gmail.co' }
-  let(:password) { '1234567' }
+  before do
+    @email = Faker::Internet.unique.email
+    @password = '1234567'
 
-  before(:all) do
-    visit '/login'
+    create_user(@email, @password, @password)
 
-    fill_in 'Email', with: ENV['USERNAME_SPREE']
-    fill_in 'Password', with: ENV['PASSWORD_SPREE']
-
-    find_button('Login').click
     find('a', text: 'My Account').click
   end
 
-  after(:all) do
-    fill_in 'Email', with: ENV['USERNAME_SPREE']
-    fill_in 'Password', with: ENV['PASSWORD_SPREE']
-    fill_in 'Password Confirmation', with: ENV['PASSWORD_SPREE']
-    find_button('Update').click
-
-    expect(page).to have_css('.alert-notice', text: 'Account updated')
-  end
+  after { logout }
 
   context 'displaying information' do
     it 'displays email' do
-      expect(page).to have_css('dd', text: ENV['USERNAME_SPREE'])
+      expect(page).to have_css('dd', text: @email)
     end
 
     it 'displays store credits' do
-      expect(page).to have_css('dd', text: '$')
+      store_credit = all('dd')[1].text
+      expect(store_credit).to match /\$\d+\.\d{2}/
     end
 
-    it 'displays orders' do
-      expect(page).to have_css('.alert-info', text: 'You have no orders yet').or have_css('.order-number')
+    it 'displays orders if there is no orders' do
+      expect(page).to have_css('.alert-info', text: 'You have no orders yet')
     end
   end
 
+
+    xit 'displays orders if there are some' do
+      login(email, password)
+
+      find('a', text: 'My Account').click
+
+      expect(page).to have_css('.order-number')
+      expect(page).to have_css('.order-date')
+      expect(page).to have_css('.order-status')
+      expect(page).to have_css('.order-total')
+      expect(page).to have_css('.order-payment-state')
+      expect(page).to have_css('.order-shipment-state')
+    end
+
+
   context 'editing information' do
+    before { find('a', text: 'Edit').click }
+
     it 'can change the email' do
-      find('a', text: 'Edit').click
+      new_email = Faker::Internet.unique.email
+      fill_inputs(new_email, @password, @password)
 
-      fill_in 'Email', with: email
-      fill_in 'Password', with: ENV['PASSWORD_SPREE']
-      fill_in 'Password Confirmation', with: ENV['PASSWORD_SPREE']
-
-      find_button('Update').click
+      click_button 'Update'
 
       expect(page).to have_css('.alert-notice', text: 'Account updated')
     end
 
     it 'can change password' do
-      
+      new_password = 'qwerty'
+      fill_inputs(@email, new_password, new_password)
 
-
-
-      fill_in 'Email', with: email
-      fill_in 'Password', with: ENV['PASSWORD_SPREE']
-
-      find_button('Login').click
-      find('a', text: 'Edit').click
-
-      fill_in 'Password', with: password
-      fill_in 'Password Confirmation', with: password
-
-      find_button('Update').click
+      click_button 'Update'
 
       expect(page).to have_css('.alert-notice', text: 'Account updated')
     end
 
     it 'cant change password' do
-      fill_in 'Email', with: email
-      fill_in 'Password', with: password
-
-      find_button('Login').click
-      find('a', text: 'Edit').click
-
-      fill_in 'Password', with: ENV['PASSWORD_SPREE']
-      fill_in 'Password Confirmation', with: password
+      new_password = 'qwerty'
+      fill_inputs(@email, new_password, @password)
 
       find_button('Update').click
 
