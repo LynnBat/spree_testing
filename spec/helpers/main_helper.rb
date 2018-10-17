@@ -11,13 +11,13 @@ module MainHelper
     click_button 'Login'
   end
 
-  def logout
-    find('a', text: 'Logout').click if page.has_css?('a', text: 'Logout')
-  end
-
   def create_user(email, password, password_confirmation)
     visit '/signup'
     fill_inputs(email, password, password_confirmation)
     click_button 'Create'
+  end
+
+  def logout
+    find('a', text: 'Logout').click if page.has_css?('a', text: 'Logout')
   end
 end
