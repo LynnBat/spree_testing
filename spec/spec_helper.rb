@@ -49,7 +49,6 @@ RSpec.configure do |config|
   config.include MainHelper
   config.include LinksHelper
   config.include ShowMeTheCookies
-  config.include ShoppingCartHelper
 
   config.after do
     Capybara.reset_sessions!

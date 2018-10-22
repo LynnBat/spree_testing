@@ -27,14 +27,12 @@ describe 'shopping_cart' do
       click_button 'Add To Cart'
     end
 
-    xit 'header displays number of items in the cart' do
+    it 'header displays number of items in the cart' do
       fill_in 'order_line_items_attributes_0_quantity', with: rand(2...10)
-
       click_button 'update-button'
 
       quantity = find('#order_line_items_attributes_0_quantity').value.to_i
-      # have to find the number, same gsub as below
-      header_items = 
+      header_items = find('.full').text.split('$')[0][/\d/].to_i
 
       expect(quantity).to eql header_items
     end
@@ -43,9 +41,8 @@ describe 'shopping_cart' do
       fill_in 'order_line_items_attributes_0_quantity', with: rand(2...10)
       click_button 'update-button'
 
-      quantity = find('#order_line_items_attributes_0_quantity').value.to_i
-      total = find('.cart-total').text.gsub(/[^\d\.]/, '').to_f
-      header_total = find('.amount').text.gsub(/[^\d\.]/, '').to_f
+      total = find('.cart-total').text.split('$')[1].to_f
+      header_total = find('.amount').text.split('$')[1].to_f
 
       expect(total).to eql header_total
     end
@@ -80,15 +77,17 @@ describe 'shopping_cart' do
       click_button 'Add To Cart'
     end
 
-    xit 'can change the quantity' do
+    it 'can change the quantity' do
       fill_in 'order_line_items_attributes_0_quantity', with: rand(2...10)
       click_button 'update-button'
 
-      quantity = find('#order_line_items_attributes_0_quantity').value.to_i
-      # I need to fix gsub here
-      number_of_items = find('.cart-subtotal').text.gsub(/[^\d{2}\.\d{2}]/, '')
+      fill_in 'order_coupon_code', with: 'segment'
+      click_button 'Apply'
 
-      expect(quantity).to egl number_of_items
+      quantity = find('#order_line_items_attributes_0_quantity').value.to_i
+      number_of_items = find('.cart-subtotal').text.split('$')[0][/\d/].to_i
+
+      expect(quantity).to eql number_of_items
     end
 
     it 'can add more items' do
@@ -136,33 +135,41 @@ describe 'shopping_cart' do
       fill_in 'order_line_items_attributes_0_quantity', with: rand(2...10)
       click_button 'update-button'
 
-      one_item_price = find('.cart-item-price').text.gsub(/[^\d\.]/, '').to_f
+      one_item_price = find('.cart-item-price').text.split('$')[1].to_f
       quantity = find('#order_line_items_attributes_0_quantity').value.to_i
       total_calculation = one_item_price * quantity
-      total_cart = find('.cart-item-total').text.gsub(/[^\d\.]/, '').to_f
+      total_cart = find('.cart-item-total').text.split('$')[1].to_f
 
       expect(total_cart).to eq total_calculation.round(2)
     end
 
-    xit 'Total for the whole order' do
+    it 'Total for the whole order' do
       visit '/products/ruby-on-rails-tote'
       click_button 'Add To Cart'
 
-      # find all and add all of them
-      find_all('.cart-item-total')[taxonomy_number]
+      total_for_item = all('.cart-item-total').to_a
+      total1 = total_for_item[0].text.split('$')[1].to_f
+      total2 = total_for_item[1].text.split('$')[1].to_f
+      total_for_order = find('.cart-total').text.split('$')[1].to_f
+
+      expect(total_for_order).to eql(total1 + total2)
     end
 
-    xit 'add discount code and see calculations' do
+    it 'add discount code and see calculations' do
       fill_in 'order_coupon_code', with: 'segment'
       click_button 'Apply'
 
-      # I need to fix gsub here
-      subtotal = find('.cart-subtotal').text.gsub(/[^\d{2}\.\d{2}]/, '')
-      promotion = subtotal / 2
-      to_pay = subtotal - promotion.round(2)
-      total = find('.cart-total').text.gsub(/[^\d\.]/, '').to_f
+      subtotal = find('.cart-subtotal').text.split('$')[1].to_f
+      promotion = (subtotal / 2).round(2)
+      to_pay = (subtotal - promotion).round(2)
+      total = find('.cart-total').text.split('$')[1].to_f
 
       expect(total).to eql to_pay
+
+      quantity = find('#order_line_items_attributes_0_quantity').value.to_i
+      number_of_items = find('.cart-subtotal').text.split('$')[0][/\d/].to_i
+
+      expect(quantity).to eql number_of_items
     end
   end
 end
