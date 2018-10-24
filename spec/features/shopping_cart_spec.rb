@@ -128,8 +128,8 @@ describe 'shopping_cart' do
 
       expect(total).to eq to_pay
 
-      quantity = find('#order_line_items_attributes_0_quantity').value.to_i
-      number_of_items = find('.cart-subtotal').text.split('$')[0][/\d/].to_i
+      quantity = find('#order_line_items_attributes_0_quantity').value
+      number_of_items = find('.cart-subtotal').text.split('$')[0][/\d/]
 
       expect(quantity).to eq number_of_items
     end
