@@ -11,6 +11,17 @@ describe 'login_page' do
     end
   end
 
+  it 'restore password' do
+    find('a', text: 'Forgot Password?').click
+
+    expect(page).to have_css('p', text: 'Please enter your email on the form below')
+
+    fill_in 'spree_user_email', with: ENV['USERNAME_SPREE']
+    click_button('Reset my password')
+
+    expect(page).to have_css('h1', text: "We're sorry, but something went wrong.") # this is a bug, i'll change the line later
+  end
+
   describe 'Login process' do
     context 'Login successful' do
       before do
