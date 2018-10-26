@@ -47,6 +47,8 @@ GEM
       rubyzip (~> 1.2)
     show_me_the_cookies (4.0.0)
       capybara (>= 2, < 4)
+    win32-clipboard (0.6.4)
+      ffi
     xpath (3.1.0)
       nokogiri (~> 1.8)
 
@@ -61,6 +63,7 @@ DEPENDENCIES
   rspec-expectations
   selenium-webdriver
   show_me_the_cookies
+  win32-clipboard
 
 BUNDLED WITH
    1.16.1
