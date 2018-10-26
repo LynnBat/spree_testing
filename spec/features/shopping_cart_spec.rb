@@ -1,4 +1,5 @@
 describe 'shopping_cart' do
+  let(:number) { rand(2...10) }
   after { logout }
 
   it 'empty cart checks' do
@@ -53,15 +54,14 @@ describe 'shopping_cart' do
     before do
       visit '/products/ruby-on-rails-bag'
       click_button 'Add To Cart'
-      @number = rand(2...10)
-      fill_in 'order_line_items_attributes_0_quantity', with: @number
+      fill_in 'order_line_items_attributes_0_quantity', with: number
       click_button 'update-button'
     end
 
     it 'header displays number of items in the cart' do
       header_items = find('.full').text.split('$')[0][/\d/].to_i
 
-      expect(@number).to eq header_items
+      expect(number).to eq header_items
     end
 
     it 'header displays the total sum' do
@@ -73,7 +73,7 @@ describe 'shopping_cart' do
 
     it 'total for each item calculations' do
       one_item_price = find('.cart-item-price').text.split('$')[1].to_f
-      total_calculation = one_item_price * @number
+      total_calculation = one_item_price * number
       total_cart = find('.cart-item-total').text.split('$')[1].to_f
 
       expect(total_cart).to eq total_calculation.round(2)
@@ -95,7 +95,7 @@ describe 'shopping_cart' do
     end
 
     it 'Total for the whole order' do
-      total_for_item = all('.cart-item-total').to_a
+      total_for_item = all('.cart-item-total')
       total1 = total_for_item[0].text.split('$')[1].to_f
       total2 = total_for_item[1].text.split('$')[1].to_f
       total_for_order = find('.cart-total').text.split('$')[1].to_f
