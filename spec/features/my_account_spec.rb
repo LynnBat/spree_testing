@@ -10,35 +10,30 @@ describe 'my_account_page' do
 
   after { logout }
 
-  context 'displaying information' do
-    it 'displays email' do
+  it 'displays information' do
+    aggregate_failures do
       expect(page).to have_css('dd', text: @email)
-    end
-
-    it 'displays store credits' do
       store_credit = all('dd')[1].text
-      expect(store_credit).to match /\$\d+\.\d{2}/
-    end
-
-    it 'displays orders if there is no orders' do
+      expect(store_credit).to match(/\$\d+\.\d{2}/)
       expect(page).to have_css('.alert-info', text: 'You have no orders yet')
     end
   end
 
-  #I'll finish that part after writing tests for creating orders
+  # I'll finish that part after writing tests for creating orders
     xit 'displays orders if there are some' do
       login(email, password)
 
       find('a', text: 'My Account').click
 
-      expect(page).to have_css('.order-number')
-      expect(page).to have_css('.order-date')
-      expect(page).to have_css('.order-status')
-      expect(page).to have_css('.order-total')
-      expect(page).to have_css('.order-payment-state')
-      expect(page).to have_css('.order-shipment-state')
+      aggregate_failures do
+        expect(page).to have_css('.order-number')
+        expect(page).to have_css('.order-date')
+        expect(page).to have_css('.order-status')
+        expect(page).to have_css('.order-total')
+        expect(page).to have_css('.order-payment-state')
+        expect(page).to have_css('.order-shipment-state')
+      end
     end
-
 
   context 'editing information' do
     before { find('a', text: 'Edit').click }
