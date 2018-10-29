@@ -180,7 +180,22 @@ describe 'shopping_cart' do
     xit 'can choose Shipping method'
     xit 'taxes are displayed'
 
-    xit 'can save cc'
+    it 'can save cc' do
+      byebug
+
+      billing address
+
+      Delivery
+
+      full_name = first_name + ' ' + last_name
+      name_on_card = find('#name_on_card_1').value
+
+      expect(page).to have_css('.panel-heading', text: 'Payment Information')
+      expect(name_on_card).to eq full_name
+
+      fill_in...
+    end
+
     xit 'cant use cc with wrong info'
     xit 'whats this info'
     xit 'can choose check'
