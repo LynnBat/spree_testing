@@ -1,11 +1,16 @@
 describe 'shopping_cart' do
-  let(:first_name) { 'Winnie' }
-  let(:last_name) { 'Pooh' }
-  let(:house_number) { '1358' }
-  let(:street) { 'Wilcox Avenue' }
-  let(:city) { 'Los Angeles' }
-  let(:zip) { '90028' }
-  let(:phone) { '1357908642' }
+  let(:address) do
+    {
+      first_name:'Winnie',
+      last_name: 'Pooh',
+      house_number: '1358',
+      street: 'Wilcox Avenue',
+      city: 'Los Angeles',
+      state: 'California',
+      zip: '90028',
+      phone: '1357908642'
+    }
+  end
 
   before do
     visit '/products/ruby-on-rails-bag'
@@ -117,14 +122,7 @@ describe 'shopping_cart' do
     end
 
     it 'can save billing address' do
-      fill_in 'order_bill_address_attributes_firstname', with: first_name
-      fill_in 'order_bill_address_attributes_lastname', with: last_name
-      fill_in 'order_bill_address_attributes_address1', with: house_number
-      fill_in 'order_bill_address_attributes_address2', with: street
-      fill_in 'order_bill_address_attributes_city', with: city
-      within('#order_bill_address_attributes_state_id') { select('California') }
-      fill_in 'order_bill_address_attributes_zipcode', with: zip
-      fill_in 'order_bill_address_attributes_phone', with: phone
+      fill_in_billing(address)
 
       click_button 'Save and Continue'
 
@@ -135,6 +133,7 @@ describe 'shopping_cart' do
       billing address
 
       uncheck 'order_use_billing'
+
 
       fill_in 'order_ship_address_attributes_firstname', with: first_name
       fill_in 'order_ship_address_attributes_lastname', with: last_name
@@ -180,7 +179,7 @@ describe 'shopping_cart' do
     xit 'can choose Shipping method'
     xit 'taxes are displayed'
 
-    it 'can save cc' do
+    xit 'can save cc' do
       byebug
 
       billing address
@@ -192,8 +191,6 @@ describe 'shopping_cart' do
 
       expect(page).to have_css('.panel-heading', text: 'Payment Information')
       expect(name_on_card).to eq full_name
-
-      fill_in...
     end
 
     xit 'cant use cc with wrong info'

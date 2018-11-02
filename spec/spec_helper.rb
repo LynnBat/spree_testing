@@ -53,6 +53,7 @@ RSpec.configure do |config|
   config.include LinksHelper
   config.include PDPHelper
   config.include ShowMeTheCookies
+  config.include CheckoutHelper
 
   config.after { logout }
   
