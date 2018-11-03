@@ -12,6 +12,14 @@ describe 'shopping_cart' do
     }
   end
 
+  let(:credit_card) do
+    {
+      number: '4111111111111111',
+      expiry_date: '02/23',
+      cvv: '2946'
+    }
+  end
+
   before do
     visit '/products/ruby-on-rails-bag'
     click_button 'Add To Cart'
@@ -94,116 +102,180 @@ describe 'shopping_cart' do
       find_button('Continue').click
     end
 
-    it 'has all blocks' do
-      customer_email = find('#order_email').value
+    describe 'Addres step' do
+      it 'has all blocks' do
+        customer_email = find('#order_email').value
 
-      aggregate_failures do
-        expect(page).to have_css('.first', text: 'Address')
-        expect(page).to have_css('.next', text: 'Delivery')
-        expect(page).to have_css('li', text: 'Payment')
-        expect(page).to have_css('.last', text: 'Complete')
-        expect(page).to have_css('.form-group', text: 'Customer E-Mail')
-        expect(customer_email).to eq ENV['USERNAME_SPREE']
-        expect(page).to have_css('.panel-heading', text: 'Billing Address')
-        expect(page).to have_css('.panel-heading', text: 'Shipping Address')
-        expect(page).to have_css('#checkout-summary', text: 'Order Summary')
+        aggregate_failures do
+         expect(page).to have_css('.first', text: 'Address')
+         expect(page).to have_css('.next', text: 'Delivery')
+         expect(page).to have_css('li', text: 'Payment')
+         expect(page).to have_css('.last', text: 'Complete')
+         expect(page).to have_css('.form-group', text: 'Customer E-Mail')
+         expect(customer_email).to eq ENV['USERNAME_SPREE']
+         expect(page).to have_css('.panel-heading', text: 'Billing Address')
+         expect(page).to have_css('.panel-heading', text: 'Shipping Address')
+         expect(page).to have_css('#checkout-summary', text: 'Order Summary')
 
-        # expect(page).to have_css('button[value="Save and Continue"]')
+         # expect(page).to have_css('button[value="Save and Continue"]')
+        end
+      end
+
+      it 'has USA as default country' do
+        uncheck 'order_use_billing'
+
+        aggregate_failures do
+          expect(page).to have_css('#order_bill_address_attributes_country_id', text: 'United States of America')
+          expect(page).to have_css('#order_ship_address_attributes_country_id', text: 'United States of America')
+        end
+      end
+
+      it_should_behave_like 'save billing address', 'I can save billing address'
+
+      it 'can save shipping different from billing' do
+        fill_in_billing(address)
+
+        uncheck 'order_use_billing'
+
+        fill_in_shipping(address)
+
+        click_button 'Save and Continue'
+
+        expect(page).to have_css('.active', text: 'Delivery')
       end
     end
 
-    it 'has USA as default country' do
-      uncheck 'order_use_billing'
+    describe 'Delivery step' do
+      before do
+        fill_in_billing(address)
 
-      aggregate_failures do
-        expect(page).to have_css('#order_bill_address_attributes_country_id', text: 'United States of America')
-        expect(page).to have_css('#order_ship_address_attributes_country_id', text: 'United States of America')
+        click_button 'Save and Continue'
+      end
+
+      it 'can see all line-items' do
+        aggregate_failures do
+          expect(page).to have_css('.item-name', text: 'Ruby on Rails Bag')
+          expect(page).to have_css('.item-name', text: 'Ruby on Rails Tote')
+        end
+      end
+
+      it 'have 3 shipping methods' do
+        shipping_method = all('.rate-cost')
+        ups_ground = shipping_method[0].text
+        ups_two_day = shipping_method[1].text
+        ups_one_day = shipping_method[2].text
+
+        aggregate_failures do
+          expect(page).to have_css('.rate-name', text: 'UPS Ground (USD)')
+          expect(ups_ground).to eq '$5.00'
+          expect(page).to have_css('.rate-name', text: 'UPS Two Day (USD)')
+          expect(ups_two_day).to eq '$10.00'
+          expect(page).to have_css('.rate-name', text: 'UPS One Day (USD)')
+          expect(ups_one_day).to eq '$15.00'
+        end
+      end
+
+      it 'can choose Shipping method' do
+        choose('UPS Two Day (USD)')
+        shipping_total = find('tr[data-hook="shipping_total"]').all('td')[1].text
+        expect(shipping_total).to eq('$10.00')
+
+        choose('UPS One Day (USD)')
+        shipping_total = find('tr[data-hook="shipping_total"]').all('td')[1].text
+        expect(shipping_total).to eq('$15.00')
+      end
+
+      xit 'taxes are displayed' do
+        taxes =  find('.total').text
+
+        # change to regex
+        expect(taxes).to eq('North America 5.0% $1.95')
       end
     end
 
-    it 'can save billing address' do
-      fill_in_billing(address)
+    describe 'Payment Step' do
+      before do
+        fill_in_billing(address)
 
-      click_button 'Save and Continue'
+        click_button 'Save and Continue'
+        click_button 'Save and Continue'
+      end
 
-      expect(page).to have_css('.active', text: 'Delivery')
-    end
+      it 'have correct info' do
+        full_name = address[:first_name] + ' ' + address[:last_name]
+        name_on_card = find('#name_on_card_1').value
 
-    xit 'can save shipping different from billing' do
-      billing address
+        aggregate_failures do
+          expect(page).to have_css('.panel-heading', text: 'Payment Information')
+          expect(name_on_card).to eq full_name
+          expect(page).to have_css('#cvv_link', text: "What's This?")
+        end
+      end
 
-      uncheck 'order_use_billing'
+      it 'can save cc' do
+        fill_in_cc(credit_card)
 
+        click_button 'Save and Continue'
 
-      fill_in 'order_ship_address_attributes_firstname', with: first_name
-      fill_in 'order_ship_address_attributes_lastname', with: last_name
-      fill_in 'order_ship_address_attributes_address1', with: house_number
-      fill_in 'order_ship_address_attributes_address2', with: street
-      fill_in 'order_ship_address_attributes_city', with: city
-      within('#order_ship_address_attributes_state_id') { select('California') }
-      fill_in 'order_ship_address_attributes_zipcode', with: zip
-      fill_in 'order_ship_address_attributes_phone', with: phone
+        expect(page).to have_css('.active', text: 'Confirm')
+      end
 
-      click_button 'Save and Continue'
+      xit 'cant use cc with wrong info' do
+        fill_in_cc(credit_card)
 
-      expect(page).to have_css('.active', text: 'Delivery')
-    end
+        fill_in 'card_expiry', with: '00/00'
 
-    xit 'can see all line-items' do
-      billing address
+        click_button 'Save and Continue'
 
-      aggregate_failures do
-        expect(page).to have_css('.item-name', text: 'Ruby on Rails Bag')
-        expect(page).to have_css('.item-name', text: 'Ruby on Rails Tote')
+        # payment is accepted - bug
+      end
+
+      it 'can choose check' do
+        choose('order_payments_attributes__payment_method_id_2')
+
+        click_button 'Save and Continue'
+
+        expect(page).to have_css('.alert-notice', text: 'Your order has been processed successfully')
+      end
+
+      it 'can add the promo' do
+        fill_in_cc(credit_card)
+        fill_in 'order_coupon_code', with: 'segment'
+
+        click_button 'Save and Continue'
+
+        expect(page).to have_css('.total', text: 'Promotion (Discount)')
       end
     end
 
-    xit 'have 3 shipping methods' do
-      billing address
+    describe 'Confirm Step' do
+      before do
+        fill_in_billing(address)
 
-      shipping_method = all('.rate-cost')
-      ups_ground = shipping_method[0].text
-      ups_two_day = shipping_method[1].text
-      ups_one_day = shipping_method[2].text
+        click_button 'Save and Continue'
+        click_button 'Save and Continue'
 
-      aggregate_failures do
-        expect(page).to have_css('.rate-name', text: 'UPS Ground (USD)')
-        expect(ups_ground).to eq '$5.00'
-        expect(page).to have_css('.rate-name', text: 'UPS Two Day (USD)')
-        expect(ups_two_day).to eq '$10.00'
-        expect(page).to have_css('.rate-name', text: 'UPS One Day (USD)')
-        expect(ups_one_day).to eq '$15.00'
+        fill_in_cc(credit_card)
+
+        click_button 'Save and Continue'
       end
+
+      it 'can edit billing' do
+        find('.first', text: 'Address').click
+
+        fill_in 'order_bill_address_attributes_phone', with: '2345'
+
+        click_button 'Save and Continue'
+
+        expect(page).to have_css('.active', text: 'Delivery')
+      end
+
+      xit 'can edit shipping'
+      xit 'can edit shipping method'
+      xit 'can edit payment'
     end
 
-    xit 'can choose Shipping method'
-    xit 'taxes are displayed'
-
-    xit 'can save cc' do
-      byebug
-
-      billing address
-
-      Delivery
-
-      full_name = first_name + ' ' + last_name
-      name_on_card = find('#name_on_card_1').value
-
-      expect(page).to have_css('.panel-heading', text: 'Payment Information')
-      expect(name_on_card).to eq full_name
-    end
-
-    xit 'cant use cc with wrong info'
-    xit 'whats this info'
-    xit 'can choose check'
-    xit 'can add the promo'
-
-    xit 'can edit billing'
-    xit 'can edit shipping'
-    xit 'can edit shipping method'
-    xit 'can edit payment'
-
-    xit 'can place the order'
-    xit 'can see all info'
+      xit 'can place the order'
+      xit 'can see all info'
   end
 end
