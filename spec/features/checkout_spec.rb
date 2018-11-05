@@ -1,7 +1,7 @@
 describe 'shopping_cart' do
   let(:address) do
     {
-      first_name:'Winnie',
+      first_name: 'Winnie',
       last_name: 'Pooh',
       house_number: '1358',
       street: 'Wilcox Avenue',
@@ -20,12 +20,30 @@ describe 'shopping_cart' do
     }
   end
 
+=begin
+  before(:all) do
+    add_stock('/admin/products/ruby-on-rails-tote/stock', 100)
+    add_stock('/admin/products/ruby-on-rails-bag/stock', 100)
+  end
+=end
+
   before do
     visit '/products/ruby-on-rails-bag'
     click_button 'Add To Cart'
     visit '/products/ruby-on-rails-tote'
     click_button 'Add To Cart'
     click_button 'Checkout'
+  end
+
+  it 'can log in with existing account' do
+    find('a', text: 'Login as Existing Customer').click
+
+    fill_in 'spree_user_email', with: ENV['USERNAME_SPREE']
+    fill_in 'spree_user_password', with: ENV['PASSWORD_SPREE']
+
+    find_button('Login').click
+
+    expect(page).to have_css('.alert-success', text: 'Logged in successfully')
   end
 
   context 'New Account' do
@@ -36,64 +54,6 @@ describe 'shopping_cart' do
 
       find_button('Create').click
     end
-
-    xit 'has all blocks'
-    xit 'can save billing address'
-    xit 'can save shipping different from billing'
-
-    xit 'can see all line-items'
-    xit 'can choose Shipping method'
-    xit 'taxes are displayed'
-
-    xit 'can save cc'
-    xit 'cant use cc with wrong info'
-    xit 'whats this info'
-    xit 'can choose check'
-    xit 'can add the promo'
-
-    xit 'can edit billing'
-    xit 'can edit shipping'
-    xit 'can edit shipping method'
-    xit 'can edit payment'
-
-    xit 'can place the order'
-    xit 'can see all info'
-  end
-
-  context 'Existing Account' do
-    before do
-      find('a', text: 'Login as Existing Customer').click
-
-      fill_in 'spree_user_email', with: ENV['USERNAME_SPREE']
-      fill_in 'spree_user_password', with: ENV['PASSWORD_SPREE']
-
-      find_button('Login').click
-    end
-
-    xit 'has all blocks'
-    xit 'can change and save billing address'
-    xit 'can change and save shipping different from billing'
-    xit 'stores address to my_account'
-    xit 'doesnt store my address to my_account'
-
-    xit 'can see all line-items'
-    xit 'can choose Shipping method'
-    xit 'taxes are displayed'
-
-    xit 'can use stored cc'
-    xit 'can save new cc'
-    xit 'cant use cc with wrong info'
-    xit 'whats this info'
-    xit 'can choose check'
-    xit 'can add the promo'
-
-    xit 'can edit billing'
-    xit 'can edit shipping'
-    xit 'can edit shipping method'
-    xit 'can edit payment'
-
-    xit 'can place the order'
-    xit 'can see all info'
   end
 
   context 'Guest' do
@@ -107,17 +67,18 @@ describe 'shopping_cart' do
         customer_email = find('#order_email').value
 
         aggregate_failures do
-         expect(page).to have_css('.first', text: 'Address')
-         expect(page).to have_css('.next', text: 'Delivery')
-         expect(page).to have_css('li', text: 'Payment')
-         expect(page).to have_css('.last', text: 'Complete')
-         expect(page).to have_css('.form-group', text: 'Customer E-Mail')
-         expect(customer_email).to eq ENV['USERNAME_SPREE']
-         expect(page).to have_css('.panel-heading', text: 'Billing Address')
-         expect(page).to have_css('.panel-heading', text: 'Shipping Address')
-         expect(page).to have_css('#checkout-summary', text: 'Order Summary')
+          expect(page).to have_css('.first', text: 'Address')
+          expect(page).to have_css('.next', text: 'Delivery')
+          expect(page).to have_css('li', text: 'Payment')
+          expect(page).to have_css('.last', text: 'Complete')
+          expect(page).to have_css('.form-group', text: 'Customer E-Mail')
+          expect(customer_email).to eq ENV['USERNAME_SPREE']
+          expect(page).to have_css('.panel-heading', text: 'Billing Address')
+          expect(page).to have_css('.panel-heading', text: 'Shipping Address')
+          expect(page).to have_css('#checkout-summary', text: 'Order Summary')
 
-         # expect(page).to have_css('button[value="Save and Continue"]')
+          # expect(page).to have_css('button[value="Save and Continue"]')
+          # expect(page).to have_css('.form-buttons', text: 'Save and Continue')
         end
       end
 
@@ -191,6 +152,12 @@ describe 'shopping_cart' do
         # change to regex
         expect(taxes).to eq('North America 5.0% $1.95')
       end
+
+      it 'can save shipping step' do
+        click_button 'Save and Continue'
+
+        expect(page).to have_css('.active', text: 'Payment')
+      end
     end
 
     describe 'Payment Step' do
@@ -260,22 +227,23 @@ describe 'shopping_cart' do
         click_button 'Save and Continue'
       end
 
-      it 'can edit billing' do
-        find('.first', text: 'Address').click
-
-        fill_in 'order_bill_address_attributes_phone', with: '2345'
-
-        click_button 'Save and Continue'
-
-        expect(page).to have_css('.active', text: 'Delivery')
-      end
-
-      xit 'can edit shipping'
-      xit 'can edit shipping method'
-      xit 'can edit payment'
-    end
-
-      xit 'can place the order'
       xit 'can see all info'
+
+      it_should_behave_like 'edit info using navigation', 'I can edit Billing Address', 'Address'
+      it_should_behave_like 'edit info using navigation', 'I can edit Shipping method address', 'Delivery'
+      it_should_behave_like 'edit info using navigation', 'I can edit Payment', 'Payment'
+
+      it_should_behave_like 'edit info using edit button', 'I can edit Billing Address', 0, 'Address'
+      it_should_behave_like 'edit info using edit button', 'I can edit Shipping Address', 1, 'Address'
+      it_should_behave_like 'edit info using edit button', 'I can edit Shipping method address', 2, 'Delivery'
+      it_should_behave_like 'edit info using edit button', 'I can edit Payment', 3, 'Payment'
+
+      it 'can place the order' do
+        click_button 'Place Order'
+
+        expect(page).to have_css('.alert-notice', text: 'Your order has been processed successfully')
+        # expect(page) button 'Back to Store'
+      end
+    end
   end
 end

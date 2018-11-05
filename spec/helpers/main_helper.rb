@@ -21,7 +21,12 @@ module MainHelper
     click_button 'Create'
   end
 
-  def logout
-    find('a', text: 'Logout').click if page.has_css?('a', text: 'Logout')
+  # fill_inputs part should be re-written
+  def add_stock (product_link, quantity)
+    visit product_link
+    fill_inputs('spree@example.com', 'spree123')
+    click_button 'Login'
+    fill_in 'stock_movement_quantity', with: quantity
+    click_button 'Add Stock'
   end
 end
