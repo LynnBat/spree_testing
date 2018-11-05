@@ -20,13 +20,6 @@ describe 'shopping_cart' do
     }
   end
 
-=begin
-  before(:all) do
-    add_stock('/admin/products/ruby-on-rails-tote/stock', 100)
-    add_stock('/admin/products/ruby-on-rails-bag/stock', 100)
-  end
-=end
-
   before do
     visit '/products/ruby-on-rails-bag'
     click_button 'Add To Cart'
@@ -107,11 +100,7 @@ describe 'shopping_cart' do
     end
 
     describe 'Delivery step' do
-      before do
-        fill_in_billing(address)
-
-        click_button 'Save and Continue'
-      end
+      before { save_address(address) }
 
       it 'can see all line-items' do
         aggregate_failures do
@@ -161,12 +150,7 @@ describe 'shopping_cart' do
     end
 
     describe 'Payment Step' do
-      before do
-        fill_in_billing(address)
-
-        click_button 'Save and Continue'
-        click_button 'Save and Continue'
-      end
+      before { save_delivery(address) }
 
       it 'have correct info' do
         full_name = address[:first_name] + ' ' + address[:last_name]
@@ -216,16 +200,7 @@ describe 'shopping_cart' do
     end
 
     describe 'Confirm Step' do
-      before do
-        fill_in_billing(address)
-
-        click_button 'Save and Continue'
-        click_button 'Save and Continue'
-
-        fill_in_cc(credit_card)
-
-        click_button 'Save and Continue'
-      end
+      before { save_payment(address, credit_card) }
 
       xit 'can see all info'
 

@@ -55,7 +55,7 @@ RSpec.configure do |config|
   config.include ShowMeTheCookies
   config.include CheckoutHelper
 
-  config.after { logout }
+  config.after { Capybara.reset_sessions! }
   
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true

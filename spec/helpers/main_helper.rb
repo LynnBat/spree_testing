@@ -21,12 +21,15 @@ module MainHelper
     click_button 'Create'
   end
 
-  # fill_inputs part should be re-written
   def add_stock (product_link, quantity)
     visit product_link
-    fill_inputs('spree@example.com', 'spree123')
+
+    fill_inputs(ENV['ADMIN_SPREE'], ENV['ADMIN_PASSWORD_SPREE'])
     click_button 'Login'
+
     fill_in 'stock_movement_quantity', with: quantity
     click_button 'Add Stock'
+
+    logout
   end
 end

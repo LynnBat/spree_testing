@@ -26,4 +26,20 @@ module CheckoutHelper
     fill_in 'card_expiry', with: card[:expiry_date]
     fill_in 'card_code', with: card[:cvv]
   end
+
+  def save_address(address)
+    fill_in_billing(address)
+    click_button 'Save and Continue'
+  end
+
+  def save_delivery(address)
+    save_address(address)
+    click_button 'Save and Continue'
+  end
+
+  def save_payment(address, card)
+    save_delivery(address)
+    fill_in_cc(card)
+    click_button 'Save and Continue'
+  end
 end
