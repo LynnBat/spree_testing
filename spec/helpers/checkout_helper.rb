@@ -1,4 +1,34 @@
 module CheckoutHelper
+  def add_test_products
+    visit '/products/ruby-on-rails-bag'
+    click_button 'Add To Cart'
+    visit '/products/ruby-on-rails-tote'
+    click_button 'Add To Cart'
+    click_button 'Checkout'
+  end
+
+  def proceed_as_user
+    find('a', text: 'Login as Existing Customer').click
+
+    fill_in 'spree_user_email', with: ENV['USERNAME_SPREE']
+    fill_in 'spree_user_password', with: ENV['PASSWORD_SPREE']
+
+    find_button('Login').click
+  end
+
+  def proceed_as_new_user(credentials)
+    fill_in 'spree_user_email', with: credentials[:email]
+    fill_in 'spree_user_password', with: credentials[:password]
+    fill_in 'spree_user_password_confirmation', with: credentials[:password]
+
+    find_button('Create').click
+  end
+
+  def proceed_as_guest(credentials)
+    fill_in 'order_email', with: credentials[:email]
+    find_button('Continue').click
+  end
+
   def fill_in_billing(address)
     fill_in 'order_bill_address_attributes_firstname', with: address[:first_name]
     fill_in 'order_bill_address_attributes_lastname', with: address[:last_name]
@@ -19,6 +49,12 @@ module CheckoutHelper
     within('#order_ship_address_attributes_state_id') { select(address[:state]) }
     fill_in 'order_ship_address_attributes_zipcode', with: address[:zip]
     fill_in 'order_ship_address_attributes_phone', with: address[:phone]
+  end
+
+  def choose_shipping_method(shipping_method, price)
+    choose(shipping_method)
+    shipping_total = find('tr[data-hook="shipping_total"]').all('td')[1].text
+    expect(shipping_total).to eq(price)
   end
 
   def fill_in_cc(card)
