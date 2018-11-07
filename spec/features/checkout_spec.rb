@@ -15,14 +15,35 @@ describe 'shopping_cart' do
       city: 'Los Angeles',
       state: 'California',
       zip: '90028',
-      phone: '1357908642'
+      phone: '123456789'
+    }
+  end
+
+  let(:address2) do
+    {
+      first_name: 'Christopher',
+      last_name: 'Robin',
+      house_number: '6464',
+      street: 'North Clark Street',
+      city: 'Chicago',
+      state: 'Illinois',
+      zip: '60626',
+      phone: '987654321'
     }
   end
 
   let(:credit_card) do
     {
-      number: '4111111111111111',
+      number: '4222222222222222',
       expiry_date: '05/25',
+      cvv: '2946'
+    }
+  end
+
+  let(:credit_card2) do
+    {
+      number: '4111111111111111',
+      expiry_date: '07/30',
       cvv: '2946'
     }
   end
@@ -89,7 +110,7 @@ describe 'shopping_cart' do
     end
 
     describe 'Payment Step' do
-      before { save_delivery(address) }
+      before { save_delivery(address, 'UPS Two Day (USD)') }
 
       it 'have correct info' do
         full_name = address[:first_name] + ' ' + address[:last_name]
@@ -109,7 +130,7 @@ describe 'shopping_cart' do
     end
 
     describe 'Confirm Step' do
-      before { save_payment(address, credit_card) }
+      before { save_payment(address, 'UPS Two Day (USD)', credit_card) }
 
       xit 'can see all info'
 

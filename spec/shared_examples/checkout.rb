@@ -15,7 +15,7 @@ shared_examples 'save address' do |name|
 
     if name.include?('Shipping')
       uncheck 'order_use_billing'
-      fill_in_shipping(address)
+      fill_in_shipping(address2)
     end
 
     click_button 'Save and Continue'
@@ -88,9 +88,51 @@ shared_examples 'edit' do |name, title, order_number = nil|
     if name.include?('navigation')
       find('.completed', text: title).click
     end
+
     if name.include?('button')
       find('.steps-data').all('h4 a')[order_number].click
     end
+
     expect(page).to have_css('.active', text: title)
+
+    if name.include?('Billing')
+      save_payment(address2, 'UPS Two Day (USD)', credit_card)
+      order_bill_address = find('div[data-hook="order-bill-address"]')
+
+      within(order_bill_address) do
+        address2.each do |key, value|
+          # the application changes states to their short titles
+          value = 'IL' if key == :state
+          expect(page).to have_content(value)
+        end
+      end
+    end
+
+    if name.include?('Shipping Address')
+      save_payment_with_different_addresses(address, address2, credit_card)
+      order_bill_address = find('div[data-hook="order-bill-address"]')
+      order_ship_address = find('div[data-hook="order-ship-address"]')
+
+      within(order_bill_address) do
+        address.each do |key, value|
+          value = 'CA' if key == :state
+          expect(page).to have_content(value)
+        end
+      end
+
+      within(order_ship_address) do
+        address2.each do |key, value|
+          value = 'IL' if key == :state
+          expect(page).to have_content(value)
+        end
+      end
+    end
+
+    if name.include?('Shipping method')
+      save_delivery('UPS Two Day (USD)')
+      byebug
+    end
+    if name.include?('Payment')
+    end
   end
 end

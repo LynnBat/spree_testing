@@ -63,18 +63,48 @@ module CheckoutHelper
     fill_in 'card_code', with: card[:cvv]
   end
 
-  def save_address(address)
-    fill_in_billing(address)
+  def save_address(billing_address, shipping_address = nil)
+    fill_in_billing(billing_address)
+
+    if shipping_address
+      uncheck 'order_use_billing'
+      fill_in_shipping(shipping_address)
+    end
+
     click_button 'Save and Continue'
   end
 
-  def save_delivery(address)
-    save_address(address)
+=begin
+  def save_delivery(billing_address, shipping_address = nil)
+    save_address(billing_address, shipping_address = nil)
     click_button 'Save and Continue'
   end
 
-  def save_payment(address, card)
-    save_delivery(address)
+  def save_payment(billing_address, card, shipping_address = nil)
+    save_delivery(billing_address, shipping_address = nil)
+    fill_in_cc(card)
+    click_button 'Save and Continue'
+  end
+=end
+
+  def save_delivery(shipping_method, address = nil)
+    if address
+      save_address(address)
+    end
+    choose(shipping_method)
+    click_button 'Save and Continue'
+  end
+
+  def save_payment(shipping_method, address = nil, card = nil)
+    save_delivery(shipping_method, address = nil)
+    fill_in_cc(card)
+    click_button 'Save and Continue'
+  end
+
+  def save_payment_with_different_addresses(billing_address, shipping_address, card)
+    save_address(billing_address, shipping_address)
+    click_button 'Save and Continue'
+    click_button 'Save and Continue'
     fill_in_cc(card)
     click_button 'Save and Continue'
   end
