@@ -129,8 +129,8 @@ shared_examples 'edit' do |name, title, order_number = nil|
     end
 
     if name.include?('Shipping method')
-      save_delivery('UPS Two Day (USD)')
       byebug
+      save_delivery('UPS One Day (USD)')
     end
     if name.include?('Payment')
     end

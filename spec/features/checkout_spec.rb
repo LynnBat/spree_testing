@@ -65,6 +65,7 @@ describe 'shopping_cart' do
 
     describe 'Addres step' do
       it 'has all blocks' do
+        byebug
         # customer_email = find('#order_email').value
 
         # change css
@@ -110,7 +111,7 @@ describe 'shopping_cart' do
     end
 
     describe 'Payment Step' do
-      before { save_delivery(address, 'UPS Two Day (USD)') }
+      before { save_delivery('UPS Two Day (USD)', address) }
 
       it 'have correct info' do
         full_name = address[:first_name] + ' ' + address[:last_name]
@@ -130,9 +131,11 @@ describe 'shopping_cart' do
     end
 
     describe 'Confirm Step' do
-      before { save_payment(address, 'UPS Two Day (USD)', credit_card) }
+!      before { save_payment('UPS Two Day (USD)', address, credit_card) }
 
-      xit 'can see all info'
+      it 'can see all info' do
+        byebug
+      end
 
       # change 'edit' shared_examples
       it_should_behave_like 'edit', 'Billing Address using navigation', 'Address'

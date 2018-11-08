@@ -91,12 +91,16 @@ module CheckoutHelper
     if address
       save_address(address)
     end
+
     choose(shipping_method)
     click_button 'Save and Continue'
   end
 
-  def save_payment(shipping_method, address = nil, card = nil)
-    save_delivery(shipping_method, address = nil)
+!  def save_payment(card, address = nil)
+    if address
+      save_delivery(address)
+    end
+
     fill_in_cc(card)
     click_button 'Save and Continue'
   end
