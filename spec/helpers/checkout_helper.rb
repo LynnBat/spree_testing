@@ -74,29 +74,16 @@ module CheckoutHelper
     click_button 'Save and Continue'
   end
 
-=begin
-  def save_delivery(billing_address, shipping_address = nil)
-    save_address(billing_address, shipping_address = nil)
-    click_button 'Save and Continue'
-  end
-
-  def save_payment(billing_address, card, shipping_address = nil)
-    save_delivery(billing_address, shipping_address = nil)
-    fill_in_cc(card)
-    click_button 'Save and Continue'
-  end
-=end
-
-  def save_delivery(shipping_method, address = nil)
-    if address
-      save_address(address)
+  def save_delivery(shipping_method, billing_address = nil, shipping_address = nil)
+    if billing_address
+      save_address(billing_address, shipping_address)
     end
 
     choose(shipping_method)
     click_button 'Save and Continue'
   end
 
-!  def save_payment(card, address = nil)
+  def save_payment(card, address = nil)
     if address
       save_delivery(address)
     end
@@ -109,6 +96,13 @@ module CheckoutHelper
     save_address(billing_address, shipping_address)
     click_button 'Save and Continue'
     click_button 'Save and Continue'
+  end
+
+  def save_payment(card, shipping_method = nil, billing_address = nil, shipping_address = nil)
+    if shipping_method
+      save_delivery(shipping_method, billing_address, shipping_address)
+    end
+
     fill_in_cc(card)
     click_button 'Save and Continue'
   end

@@ -34,7 +34,7 @@ describe 'shopping_cart' do
 
   let(:credit_card) do
     {
-      number: '4222222222222222',
+      number: '4111111111111111',
       expiry_date: '05/25',
       cvv: '2946'
     }
@@ -42,7 +42,7 @@ describe 'shopping_cart' do
 
   let(:credit_card2) do
     {
-      number: '4111111111111111',
+      number: '4222222222222222',
       expiry_date: '07/30',
       cvv: '2946'
     }
@@ -85,6 +85,7 @@ describe 'shopping_cart' do
         end
       end
 
+      it_should_behave_like 'displays info', 'on Address step'
       it_should_behave_like 'default country', 'USA'
       it_should_behave_like 'save address', 'Billing'
       it_should_behave_like 'save address', 'Shipping different from Billing'
@@ -96,10 +97,9 @@ describe 'shopping_cart' do
       it_should_behave_like 'has all needed info', 'shipping methods, line-items'
       it_should_behave_like 'shipping methods', 'can be changed'
 
-      xit 'taxes are displayed' do
-        taxes =  find('.total').text
+      it 'taxes are displayed' do
+        taxes = find('.total').text
 
-        # change to regex
         expect(taxes).to eq('North America 5.0% $1.95')
       end
 
@@ -124,20 +124,15 @@ describe 'shopping_cart' do
         end
       end
 
+      xit 'cant save credit card with wrong info' # bug
+
       it_should_behave_like 'credit card', 'can be saved'
-      # it_should_behave_like 'credit card', 'cant save credit card with wrong info', '00/00'
       it_should_behave_like 'payment via check', 'can pay with the check'
       it_should_behave_like 'promocode', 'can be added'
     end
 
     describe 'Confirm Step' do
-!      before { save_payment('UPS Two Day (USD)', address, credit_card) }
-
-      it 'can see all info' do
-        byebug
-      end
-
-      # change 'edit' shared_examples
+      it_should_behave_like 'visable information', 'on Confirmation step'
       it_should_behave_like 'edit', 'Billing Address using navigation', 'Address'
       it_should_behave_like 'edit', 'Shipping method address using navigation', 'Delivery'
       it_should_behave_like 'edit', 'Payment using navigation', 'Payment'

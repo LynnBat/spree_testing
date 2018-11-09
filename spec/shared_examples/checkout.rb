@@ -1,3 +1,26 @@
+shared_examples 'displays info' do |name|
+  it name do
+    # customer_email = find('#order_email').value
+
+    aggregate_failures do
+      expect(page).to have_css('div[data-hook="checkout_header"]')
+      expect(page).to have_css('.first', text: 'Address')
+      expect(page).to have_css('.next', text: 'Delivery')
+      expect(page).to have_css('li', text: 'Payment')
+      expect(page).to have_css('.last', text: 'Complete')
+
+      expect(page).to have_css('.form-group', text: 'Customer E-Mail')
+      # expect(customer_email).to eq ENV['USERNAME_SPREE']
+
+      expect(page).to have_css('.panel-heading', text: 'Billing Address')
+      expect(page).to have_css('.panel-heading', text: 'Shipping Address')
+      expect(page).to have_css('#checkout-summary', text: 'Order Summary')
+
+      expect(page).to have_button('Save and Continue')
+    end
+  end
+end
+
 shared_examples 'default country' do |name|
   it name do
     uncheck 'order_use_billing'
@@ -83,6 +106,41 @@ shared_examples 'promocode' do |name|
   end
 end
 
+shared_examples 'visable information' do |name|
+  it name do
+    aggregate_failures do
+      expect(page).to have_css('div[data-hook="checkout_header"]')
+      expect(page).to have_css('.col-sm-3', text: 'Checkout')
+      expect(page).to have_css('.completed', text: 'Address')
+      expect(page).to have_css('.completed', text: 'Delivery')
+      expect(page).to have_css('.completed', text: 'Payment')
+      expect(page).to have_css('.completed', text: 'Address')
+      expect(page).to have_css('.active', text: 'Confirm')
+      expect(page).to have_css('.last', text: 'Complete')
+
+      expect(page).to have_css('.panel-heading', text: 'Confirm')
+      expect(page).to have_css('.col-xs-6', text: 'Billing Address')
+      expect(page).to have_css('.col-xs-6', text: 'Shipping Address')
+      expect(page).to have_css('.col-xs-6', text: 'Shipments')
+      expect(page).to have_css('.col-xs-6', text: 'Payment Information')
+
+      expect(page).to have_css('.active', text: 'Item')
+      expect(page).to have_css('.active', text: 'Price')
+      expect(page).to have_css('.active', text: 'Qty')
+      expect(page).to have_css('.active', text: 'Total')
+      expect(page).to have_css('#line-items', text: 'Ruby on Rails Bag')
+      expect(page).to have_css('#line-items', text: 'Ruby on Rails Tote')
+
+      expect(page).to have_css('.total', text: 'Subtotal')
+      expect(page).to have_css('.total', text: 'Shipping')
+      expect(page).to have_css('.total', text: 'Tax')
+      expect(page).to have_css('.total', text: 'Order Total')
+
+      expect(page).to have_button('Place Order')
+    end
+  end
+end
+
 shared_examples 'edit' do |name, title, order_number = nil|
   it name do
     if name.include?('navigation')
@@ -96,7 +154,7 @@ shared_examples 'edit' do |name, title, order_number = nil|
     expect(page).to have_css('.active', text: title)
 
     if name.include?('Billing')
-      save_payment(address2, 'UPS Two Day (USD)', credit_card)
+      save_payment(credit_card, 'UPS Two Day (USD)', address2)
       order_bill_address = find('div[data-hook="order-bill-address"]')
 
       within(order_bill_address) do
@@ -109,7 +167,7 @@ shared_examples 'edit' do |name, title, order_number = nil|
     end
 
     if name.include?('Shipping Address')
-      save_payment_with_different_addresses(address, address2, credit_card)
+      save_payment(credit_card, 'UPS Two Day (USD)', address, address2)
       order_bill_address = find('div[data-hook="order-bill-address"]')
       order_ship_address = find('div[data-hook="order-ship-address"]')
 
@@ -129,10 +187,16 @@ shared_examples 'edit' do |name, title, order_number = nil|
     end
 
     if name.include?('Shipping method')
-      byebug
       save_delivery('UPS One Day (USD)')
+      save_payment(credit_card, 'UPS One Day (USD)')
+
+      expect(page).to have_css('.delivery', text: 'From default via UPS One Day (USD)')
     end
+
     if name.include?('Payment')
+      save_payment(credit_card2)
+
+      expect(page).to have_css('.payment-info', text: 'Ending in 2222')
     end
   end
 end
