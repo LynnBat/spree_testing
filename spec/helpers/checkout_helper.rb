@@ -74,12 +74,9 @@ module CheckoutHelper
     click_button 'Save and Continue'
   end
 
-  def save_delivery(shipping_method, billing_address = nil, shipping_address = nil)
-    if billing_address
-      save_address(billing_address, shipping_address)
-    end
-
+  def save_delivery(shipping_method)
     choose(shipping_method)
+
     click_button 'Save and Continue'
   end
 
@@ -99,13 +96,9 @@ module CheckoutHelper
   end
 
   def save_payment(card, shipping_method = nil, billing_address = nil, shipping_address = nil)
-    if shipping_method
-      save_delivery(shipping_method, billing_address, shipping_address)
-    end
+    save_delivery(shipping_method, billing_address, shipping_address) if shipping_method
 
-    if page.has_css?('.card_options')
-      choose('use_existing_card_no')
-    end
+    choose('use_existing_card_no') if page.has_css?('.card_options')
 
     fill_in_cc(card)
     click_button 'Save and Continue'

@@ -15,6 +15,10 @@ module MainHelper
     login(ENV['ADMIN_SPREE'], ENV['ADMIN_PASSWORD_SPREE'])
   end
 
+  def logout
+    visit '/logout'
+  end
+
   def create_user(email, password, password_confirmation)
     visit '/signup'
     fill_inputs(email, password, password_confirmation)

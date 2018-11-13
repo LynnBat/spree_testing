@@ -175,13 +175,8 @@ end
 
 shared_examples 'edit' do |name, title, order_number = nil|
   it name do
-    if name.include?('navigation')
-      find('.completed', text: title).click
-    end
-
-    if name.include?('button')
-      find('.steps-data').all('h4 a')[order_number].click
-    end
+    find('.completed', text: title).click if name.include?('navigation')
+    find('.steps-data').all('h4 a')[order_number].click if name.include?('button')
 
     expect(page).to have_css('.active', text: title)
 

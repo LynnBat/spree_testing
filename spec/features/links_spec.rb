@@ -5,7 +5,7 @@ describe 'links' do
 
   it_should_behave_like 'link leads to', 'Login Page', '#link-to-login', '/login'
 
-  it_should_behave_like 'link leads to', 'Cart', '#link-to-cart', '/cart'
+  it_should_behave_like 'link leads to', 'Cart', '.cart-info', '/cart'
 
   it_should_behave_like 'link leads to', 'Home Page', '#home-link', '/'
 
