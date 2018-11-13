@@ -69,9 +69,41 @@ end
 
 shared_examples 'shipping methods' do |name|
   it name do
-    choose_shipping_method('UPS Two Day (USD)', '$10.00')
     choose_shipping_method('UPS One Day (USD)', '$15.00')
+    expect(page).to have_css('tr[data-hook="shipping_total"]', text: '$15.00')
+
     choose_shipping_method('UPS Ground (USD)', '$5.00')
+    expect(page).to have_css('tr[data-hook="shipping_total"]', text: '$5.00')
+
+    choose_shipping_method('UPS Two Day (USD)', '$10.00')
+    expect(page).to have_css('tr[data-hook="shipping_total"]', text: '$10.00')
+
+    if name.include?('save')
+      click_button 'Save and Continue'
+
+      expect(page).to have_css('.active', text: 'Payment')
+    end
+  end
+end
+
+shared_examples 'taxes' do |name|
+  it name do
+    taxes = find('.total').text
+
+    expect(taxes).to eq('North America 5.0% $1.95')
+  end
+end
+
+shared_examples 'correct info' do |name|
+  it name do
+    full_name = address[:first_name] + ' ' + address[:last_name]
+    name_on_card = find('#name_on_card_1').value
+
+    aggregate_failures do
+      expect(page).to have_css('.panel-heading', text: 'Payment Information')
+      expect(name_on_card).to eq full_name
+      expect(page).to have_css('#cvv_link', text: "What's This?")
+    end
   end
 end
 
@@ -102,7 +134,7 @@ shared_examples 'promocode' do |name|
 
     click_button 'Save and Continue'
 
-    expect(page).to have_css('.total', text: 'Promotion (Discount)')
+    expect(page).to have_css('.total', text: 'Promotion (Segment)')
   end
 end
 
@@ -197,6 +229,17 @@ shared_examples 'edit' do |name, title, order_number = nil|
       save_payment(credit_card2)
 
       expect(page).to have_css('.payment-info', text: 'Ending in 2222')
+    end
+  end
+end
+
+shared_examples 'placing the order' do |name|
+  it name do
+    click_button 'Place Order'
+
+    aggregate_failures do
+      expect(page).to have_css('.alert-notice', text: 'Your order has been processed successfully')
+      expect(page).to have_css('.button', text: 'Back to Store')
     end
   end
 end

@@ -103,6 +103,10 @@ module CheckoutHelper
       save_delivery(shipping_method, billing_address, shipping_address)
     end
 
+    if page.has_css?('.card_options')
+      choose('use_existing_card_no')
+    end
+
     fill_in_cc(card)
     click_button 'Save and Continue'
   end
