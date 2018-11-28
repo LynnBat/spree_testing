@@ -48,122 +48,43 @@ describe 'shopping_cart' do
     }
   end
 
-  before { add_test_products }
-
-  it 'can log in with existing account' do
-    proceed_as_user
-
-    expect(page).to have_css('.alert-success', text: 'Logged in successfully')
+  before do
+    add_to_cart('/products/ruby-on-rails-bag')
+    add_to_cart('/products/ruby-on-rails-tote')
+    click_button 'Checkout'
   end
 
   context 'New Account' do
     before { proceed_as_new_user(credentials) }
 
-    describe 'Addres step' do
-      it 'has all blocks' do
-        byebug
-        # customer_email = find('#order_email').value
+    it_should_behave_like 'Address step'
+    it_should_behave_like 'Delivery step'
+    it_should_behave_like 'Payment step'
+    it_should_behave_like 'Confirmation step'
 
-        # change css
-        aggregate_failures do
-          expect(page).to have_css('.first', text: 'Address')
-          expect(page).to have_css('.next', text: 'Delivery')
-          expect(page).to have_css('li', text: 'Payment')
-          expect(page).to have_css('.last', text: 'Complete')
-          expect(page).to have_css('.form-group', text: 'Customer E-Mail')
-          # expect(customer_email).to eq ENV['USERNAME_SPREE']
-          expect(page).to have_css('.panel-heading', text: 'Billing Address')
-          expect(page).to have_css('.panel-heading', text: 'Shipping Address')
-          expect(page).to have_css('#checkout-summary', text: 'Order Summary')
-
-          # expect(page).to have_css('button[value="Save and Continue"]')
-          # expect(page).to have_css('.form-buttons', text: 'Save and Continue')
-        end
-      end
-
-      it_should_behave_like 'displays info', 'on Address step'
-      it_should_behave_like 'default country', 'USA'
-      it_should_behave_like 'save address', 'Billing'
-      it_should_behave_like 'save address', 'Shipping different from Billing'
-    end
-
-    describe 'Delivery step' do
-      before { save_address(address) }
-
-      it_should_behave_like 'has all needed info', 'shipping methods, line-items'
-      it_should_behave_like 'shipping methods', 'can be changed'
-      it_should_behave_like 'taxes', 'are displayed'
-      it_should_behave_like 'shipping methods', 'can be saved'
-    end
-
-    describe 'Payment Step' do
-      before { save_delivery('UPS Two Day (USD)', address) }
-
-      it_should_behave_like 'correct info', 'on Payment page'
-
-      xit 'cant save credit card with invalid info' # bug
-
-      it_should_behave_like 'credit card', 'can be saved'
-      it_should_behave_like 'payment via check', 'can pay with the check'
-      it_should_behave_like 'promocode', 'can be added'
-    end
-
-    describe 'Confirm Step' do
-      before { save_payment(credit_card, 'UPS Two Day (USD)', address) }
-
-      it_should_behave_like 'visable information', 'on Confirmation step'
-      it_should_behave_like 'edit', 'Billing Address using navigation', 'Address'
-      it_should_behave_like 'edit', 'Shipping method address using navigation', 'Delivery'
-      it_should_behave_like 'edit', 'Payment using navigation', 'Payment'
-      it_should_behave_like 'edit', 'Billing Address using button', 'Address', 0
-      it_should_behave_like 'edit', 'Shipping Address using button', 'Address', 1
-      it_should_behave_like 'edit', 'Shipping method using button', 'Delivery', 2
-      it_should_behave_like 'edit', 'Payment using button', 'Payment', 3
-      it_should_behave_like 'placing the order', 'can be performed'
-    end
+    it_should_behave_like 'can edit on Confirmation step', 'Billing Address using navigation', 'Address'
+    it_should_behave_like 'can edit on Confirmation step', 'Shipping method address using navigation', 'Delivery'
+    it_should_behave_like 'can edit on Confirmation step', 'Payment using navigation', 'Payment'
+    it_should_behave_like 'can edit on Confirmation step', 'Billing Address using button', 'Address', 0
+    it_should_behave_like 'can edit on Confirmation step', 'Shipping Address using button', 'Address', 1
+    it_should_behave_like 'can edit on Confirmation step', 'Shipping method using button', 'Delivery', 2
+    it_should_behave_like 'can edit on Confirmation step', 'Payment using button', 'Payment', 3
   end
 
   context 'Guest' do
     before { proceed_as_guest(credentials) }
 
-    describe 'Addres step' do
-      it_should_behave_like 'displays info', 'on Address step'
-      it_should_behave_like 'default country', 'USA'
-      it_should_behave_like 'save address', 'Billing'
-      it_should_behave_like 'save address', 'Shipping different from Billing'
-    end
+    it_should_behave_like 'Address step'
+    it_should_behave_like 'Delivery step'
+    it_should_behave_like 'Payment step'
+    it_should_behave_like 'Confirmation step'
 
-    describe 'Delivery step' do
-      before { save_address(address) }
-
-      it_should_behave_like 'has all needed info', 'shipping methods, line-items'
-      it_should_behave_like 'shipping methods', 'can be changed'
-      it_should_behave_like 'taxes', 'are displayed'
-      it_should_behave_like 'shipping methods', 'can be saved'
-    end
-
-    describe 'Payment Step' do
-      before { save_delivery('UPS Two Day (USD)', address) }
-
-      it_should_behave_like 'correct info', 'on Payment page'
-
-      xit 'cant save credit card with invalid info' # bug
-
-      it_should_behave_like 'credit card', 'can be saved'
-      it_should_behave_like 'payment via check', 'can pay with the check'
-      it_should_behave_like 'promocode', 'can be added'
-    end
-
-    describe 'Confirm Step' do
-      it_should_behave_like 'visable information', 'on Confirmation step'
-      it_should_behave_like 'edit', 'Billing Address using navigation', 'Address'
-      it_should_behave_like 'edit', 'Shipping method address using navigation', 'Delivery'
-      it_should_behave_like 'edit', 'Payment using navigation', 'Payment'
-      it_should_behave_like 'edit', 'Billing Address using button', 'Address', 0
-      it_should_behave_like 'edit', 'Shipping Address using button', 'Address', 1
-      it_should_behave_like 'edit', 'Shipping method using button', 'Delivery', 2
-      it_should_behave_like 'edit', 'Payment using button', 'Payment', 3
-      it_should_behave_like 'placing the order', 'can be performed'
-    end
+    it_should_behave_like 'can edit on Confirmation step', 'Billing Address using navigation', 'Address'
+    it_should_behave_like 'can edit on Confirmation step', 'Shipping method address using navigation', 'Delivery'
+    it_should_behave_like 'can edit on Confirmation step', 'Payment using navigation', 'Payment'
+    it_should_behave_like 'can edit on Confirmation step', 'Billing Address using button', 'Address', 0
+    it_should_behave_like 'can edit on Confirmation step', 'Shipping Address using button', 'Address', 1
+    it_should_behave_like 'can edit on Confirmation step', 'Shipping method using button', 'Delivery', 2
+    it_should_behave_like 'can edit on Confirmation step', 'Payment using button', 'Payment', 3
   end
 end

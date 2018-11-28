@@ -30,7 +30,7 @@ describe 'login_page' do
       end
 
       it 'can Log in as a User' do
-        find_button('Login').click
+        click_button 'Login'
 
         expect(page).to have_css('a', text: 'Logout')
         alert_text = find('.alert-success').text
@@ -39,7 +39,7 @@ describe 'login_page' do
 
       it 'remembers User' do
         check 'Remember me'
-        find_button('Login').click
+        click_button 'Login'
 
         alert_text = find('.alert-success').text
         expect(alert_text).to eq 'Logged in successfully'
@@ -53,7 +53,7 @@ describe 'login_page' do
       end
 
       it 'doesnt remeber User' do
-        find_button('Login').click
+        click_button 'Login'
 
         alert_text = find('.alert-success').text
         expect(alert_text).to eq 'Logged in successfully'
@@ -72,7 +72,7 @@ describe 'login_page' do
         fill_in 'spree_user_email', with: '12345@qwe.co'
         fill_in 'spree_user_password', with: password
 
-        find_button('Login').click
+        click_button 'Login'
 
         alert_text = find('.alert-error').text
         expect(alert_text).to eq 'Invalid email or password.'
@@ -82,7 +82,7 @@ describe 'login_page' do
         fill_in 'spree_user_email', with: ENV['USERNAME_SPREE']
         fill_in 'spree_user_password', with: password
 
-        find_button('Login').click
+        click_button 'Login'
 
         alert_text = find('.alert-error').text
         expect(alert_text).to eq 'Invalid email or password.'
@@ -98,7 +98,7 @@ describe 'login_page' do
       fill_in 'spree_user_password', with: password
       fill_in 'spree_user_password_confirmation', with: password
 
-      find_button('Create').click
+      click_button 'Create'
 
       alert_text = find('.alert-notice').text
       expect(alert_text).to eq 'Welcome! You have signed up successfully.'
@@ -109,7 +109,7 @@ describe 'login_page' do
       fill_in 'spree_user_password', with: ENV['PASSWORD_SPREE']
       fill_in 'spree_user_password_confirmation', with: ENV['PASSWORD_SPREE']
 
-      find_button('Create').click
+      click_button 'Create'
 
       alert_text = find('.alert-danger').text
       expect(alert_text).to match 'Email has already been taken'
@@ -120,7 +120,7 @@ describe 'login_page' do
       fill_in 'spree_user_password', with: password
       fill_in 'spree_user_password_confirmation', with: ENV['PASSWORD_SPREE']
 
-      find_button('Create').click
+      click_button 'Create'
 
       alert_text = find('.alert-danger').text
       expect(alert_text).to match "Password Confirmation doesn't match Password"

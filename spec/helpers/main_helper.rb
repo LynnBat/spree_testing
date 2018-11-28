@@ -16,7 +16,7 @@ module MainHelper
   end
 
   def logout
-    visit '/logout'
+    visit '/logout' if page.has_css?('a', text: 'Logout')
   end
 
   def create_user(email, password, password_confirmation)
