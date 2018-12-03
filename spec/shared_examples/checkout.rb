@@ -1,17 +1,12 @@
 shared_examples 'Address step' do
   it 'displays info on Address step' do
-    # customer_email = find('#order_email').value
-
     aggregate_failures do
       expect(page).to have_css('div[data-hook="checkout_header"]')
       expect(page).to have_css('.first', text: 'Address')
       expect(page).to have_css('.next', text: 'Delivery')
       expect(page).to have_css('li', text: 'Payment')
       expect(page).to have_css('.last', text: 'Complete')
-
       expect(page).to have_css('.form-group', text: 'Customer E-Mail')
-      # expect(customer_email).to eq ENV['USERNAME_SPREE']
-
       expect(page).to have_css('.panel-heading', text: 'Billing Address')
       expect(page).to have_css('.panel-heading', text: 'Shipping Address')
       expect(page).to have_css('#checkout-summary', text: 'Order Summary')

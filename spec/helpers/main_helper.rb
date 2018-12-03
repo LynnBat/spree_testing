@@ -1,6 +1,8 @@
 module MainHelper
   def fill_inputs(email, password, password_confirmation = nil)
-    fill_in 'Email', with: email
+    id = page.has_css?('#spree_user_email') ? 'spree_user_email' : 'user_email'
+
+    fill_in id, with: email
     fill_in 'Password', with: password
     fill_in 'Password Confirmation', with: password_confirmation if password_confirmation
   end
@@ -23,17 +25,5 @@ module MainHelper
     visit '/signup'
     fill_inputs(email, password, password_confirmation)
     click_button 'Create'
-  end
-
-  def add_stock (product_link, quantity)
-    visit product_link
-
-    fill_inputs(ENV['ADMIN_SPREE'], ENV['ADMIN_PASSWORD_SPREE'])
-    click_button 'Login'
-
-    fill_in 'stock_movement_quantity', with: quantity
-    click_button 'Add Stock'
-
-    logout
   end
 end

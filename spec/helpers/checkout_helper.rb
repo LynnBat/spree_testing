@@ -4,21 +4,8 @@ module CheckoutHelper
     click_button 'Add To Cart'
   end
 
-  def proceed_as_user
-    click_link 'Login as Existing Customer'
-
-    # fill_inputs(ENV['USERNAME_SPREE'], ENV['PASSWORD_SPREE'])
-    fill_in 'spree_user_email', with: ENV['USERNAME_SPREE']
-    fill_in 'spree_user_password', with: ENV['PASSWORD_SPREE']
-
-    click_button 'Login'
-  end
-
   def proceed_as_new_user(credentials)
-    # fill_inputs(credentials[:email], credentials[:password], credentials[:password])
-    fill_in 'spree_user_email', with: credentials[:email]
-    fill_in 'spree_user_password', with: credentials[:password]
-    fill_in 'spree_user_password_confirmation', with: credentials[:password]
+    fill_inputs(credentials[:email], credentials[:password], credentials[:password])
 
     click_button 'Create'
   end

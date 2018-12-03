@@ -30,7 +30,7 @@ describe 'shopping_cart' do
     it 'has item info and checkout/continue shopping buttons' do
       aggregate_failures do
         expect(page).to have_css('a', text: 'Ruby on Rails Bag')
-        expect(page).to have_css('span.line-item-description', text: 'Odit vel esse voluptatibus est vero repellat')
+        expect(page).to have_css('span.line-item-description', text: 'Qui veritatis qui impedit et quia officiis rem eligendi')
         expect(page).to have_css('#checkout-link')
         expect(page).to have_css('a', text: 'Continue shopping')
       end
