@@ -11,7 +11,10 @@ Dir['./spec/shared_examples/**/*.rb'].each { |file| require file }
 
 # New driver for Chrome browser
 Capybara.register_driver :chrome do |app|
-  Capybara::Selenium::Driver.new(app, browser: :chrome)
+  prefs = { 'profile.managed_default_content_settings.notifications' => 2 }
+  options = %w[incognito start-maximized disable-notifications]
+
+  Capybara::Selenium::Driver.new(app, browser: :chrome, options: Selenium::WebDriver::Chrome::Options.new(args: options, prefs: prefs))
 end
 
 # New driver for Firefox browser
@@ -39,10 +42,11 @@ Capybara.default_driver = case ENV['browser']
 
 ShowMeTheCookies.register_adapter(ENV['browser'].to_sym, ShowMeTheCookies::Selenium)
 
-Capybara.app_host = 'https://spree-qa-lynn.herokuapp.com'
+Capybara.app_host = 'https://lynn-spree.herokuapp.com'
+# 'https://spree-qa-lynn.herokuapp.com'
 
 Capybara.run_server = false
-Capybara.page.driver.browser.manage.window.maximize
+# Capybara.page.driver.browser.manage.window.maximize
 
 RSpec.configure do |config|
   config.include Capybara::DSL
@@ -51,7 +55,8 @@ RSpec.configure do |config|
   config.include ShowMeTheCookies
 
   config.after do
-    Capybara.reset_sessions!
+    logout
+    Capybara.reset_session!
   end
   
   config.expect_with :rspec do |expectations|
