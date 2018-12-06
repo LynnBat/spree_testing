@@ -1,22 +1,25 @@
 describe 'pdp' do
-
   before(:all) do
     login(ENV['ADMIN_SPREE'], ENV['ADMIN_PASSWORD_SPREE'])
 
     visit '/admin/products/ruby-on-rails-baseball-jersey/edit'
+    byebug
     @title = find('#product_name').value
     @description = find('#product_description').value
     @price = find('#product_price').value
 
     visit '/admin/products/ruby-on-rails-baseball-jersey/variants'
-    @variants = find('.ui-sortable').all('td').collect(&:value)
+    @variants = []
+    table = find('.ui-sortable').all('tr')
+    table.each do |variant|
+      within(variant) { @variants << all('td')[1].text }
+    end
 
     visit '/admin/products/ruby-on-rails-baseball-jersey/product_properties'
-    # @properties = all('.form-control').collect(&:value).reject(&:empty?)
+    @properties = all('.form-control').collect(&:value).reject(&:empty?)
 
     Capybara.reset_session!
   end
-
 
   before { visit '/products/ruby-on-rails-baseball-jersey' }
 
@@ -48,30 +51,32 @@ describe 'pdp' do
   end
 
   context 'picture' do
-    xit 'are present' do
+    it 'are present' do
+      byebug
       # expect(page).to have_css("img[src*='ror_baseball_jersey_red.png']")
       expect(page).to have_css('.thumbnails.list-inline')
     end
 
     xit 'can choose different picture'
-    xit 'while hovering the picture, main is changed'
+    xit 'while hovering the picture, main is changed' do
+      # all('img.thumbnail').last.hover
+    end
   end
 
   context 'properties+description' do
     it 'all info is displayed' do
       pdp_title = find('.product-title').text
       pdp_description = find('.well').text
-      byebug
-      # pdp_price = find('.lead.price.selling').text
+      pdp_price = find('.lead.price.selling').text
       pdp_variants = all('.variant-description').collect(&:text)
-      # pdp_properties = find('#product-properties').all('td').collect(&:text)
+      pdp_properties = find('#product-properties').all('td').collect(&:text)
 
       aggregate_failures do
-        expect(@title).to eq pdp_title
-        expect(@description).to eq pdp_description
-        # expect(@price).to eq pdp_price
-        # expect(@variants).to eq pdp_variants
-        # expect(@properties).to eq pdp_properties
+        expect(pdp_title).to eq @title
+        expect(pdp_description).to eq @description
+        expect(pdp_price).to include @price
+        expect(pdp_variants).to eq @variants
+        expect(pdp_properties).to eq @properties
         expect(page).to have_css('.product-section-title', text: 'Properties')
       end
     end
