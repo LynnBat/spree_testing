@@ -83,17 +83,25 @@ describe 'pdp' do
   end
 
   context 'description block' do
-    xit 'can choose any variant'
-    xit 'can see the price'
+    it 'can choose any variant' do
+      byebug
+    end
     xit 'can change the quantity: to write it, to use the arrows'
     xit 'can add to the card'
   end
 
   context 'similar items' do
     it 'can see the title of the block' do
-      byebug
+      expect(page).to have_css('.product-section-title', text: 'Look for similar items')
     end
 
-    xit 'can be redirected to those items'
+    it 'can be redirected to those items' do
+      names = all('.list-group-item').collect(&:text)
+      names.each do |item|
+        within('#taxon-crumbs') { click_link item }
+        expect(page.current_url).to eq "#{Capybara.app_host}/t/#{item.downcase}"
+        go_back
+      end
+    end
   end
 end
