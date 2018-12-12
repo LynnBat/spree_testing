@@ -1,8 +1,8 @@
 module MainHelper
   def fill_inputs(email, password, password_confirmation = nil)
-    id = page.has_css?('#spree_user_email') ? 'spree_user_email' : 'user_email'
+    user_email_id = page.has_css?('#spree_user_email') ? 'spree_user_email' : 'user_email'
 
-    fill_in id, with: email
+    fill_in user_email_id, with: email
     fill_in 'Password', with: password
     fill_in 'Password Confirmation', with: password_confirmation if password_confirmation
   end

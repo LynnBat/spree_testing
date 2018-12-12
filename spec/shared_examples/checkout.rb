@@ -16,7 +16,7 @@ shared_examples 'Address step' do
   end
 
   it 'default country is USA' do
-    uncheck 'order_use_billing'
+    uncheck 'Use Billing Address'
 
     aggregate_failures do
       expect(page).to have_css('#order_bill_address_attributes_country_id', text: 'United States of America')
@@ -33,7 +33,7 @@ shared_examples 'Address step' do
 
   it 'can save Shipping different from Billing' do
     fill_in_billing(address)
-    uncheck 'order_use_billing'
+    uncheck 'Use Billing Address'
 
     fill_in_shipping(address2)
     click_button 'Save and Continue'
@@ -44,12 +44,12 @@ end
 
 shared_examples 'Delivery step' do
   before { save_address(address) }
-
+=begin
   it 'has shipping methods, line-items' do
-    shipping_method = all('.rate-cost')
-    ups_ground = shipping_method[0].text
-    ups_two_day = shipping_method[1].text
-    ups_one_day = shipping_method[2].text
+    shipping_method_cost = all('.rate-cost')
+    ups_ground = shipping_method_cost[0].text
+    ups_two_day = shipping_method_cost[1].text
+    ups_one_day = shipping_method_cost[2].text
 
     aggregate_failures do
       expect(page).to have_css('.rate-name', text: 'UPS Ground (USD)')
@@ -73,11 +73,15 @@ shared_examples 'Delivery step' do
     choose('UPS Two Day (USD)')
     expect(page).to have_css('tr[data-hook="shipping_total"]', text: '$10.00')
   end
+=end
+  it 'taxes are calculated correctly' do
+    item_total = find('tr[data-hook="item_total"]').text.split[-1]
+    taxes_percent = find('.total').text.split[-2]
+    taxes = find('.total').text.split[-1]
+    byebug
 
-  it 'taxes are displayed' do
-    taxes = find('.total').text
-
-    expect(taxes).to eq('North America 5.0% $1.95')
+    # need to change that for a Faker
+    expect(taxes).to eq #calculation total * taxes_percent / 100%
   end
 
   it 'shipping methods can be saved' do
@@ -85,12 +89,58 @@ shared_examples 'Delivery step' do
 
     expect(page).to have_css('.active', text: 'Payment')
   end
+
+  it 'shipping methods can be saved' do
+    delivery_method_costs = all('.rate-cost').collect(&:text)
+    delivery_method_costs.each do |delivery_method_cost|
+      within('.shipping-methods') { choose delivery_method_cost }
+
+      click_button 'Save and Continue'
+
+      shipping_total = find('td[data-hook="shipping-total"]').text
+
+      aggregate_failures do
+        expect(page).to have_css('.active', text: 'Payment')
+        expect(shipping_total).to eq delivery_method_cost
+      end
+
+      click_link 'Delivery'
+    end
+  end
 end
 
 shared_examples 'Payment step' do
-  before { save_delivery('UPS Two Day (USD)', address) }
+  before do
+    save_address(address)
+    save_delivery('UPS Two Day (USD)')
+  end
 
-  xit 'cant save credit card with invalid info' # bug
+  it 'cant save credit card with invalid Month' do
+    credit_card[:expiry_date] = '00/00'
+
+    fill_in_cc(credit_card)
+    click_button 'Save and Continue'
+
+    expect(page).to have_css('.alert-danger')
+  end
+
+  it 'cant save credit card with invalid CC number' do
+    credit_card[:number] = '0000000000000000'
+
+    fill_in_cc(credit_card)
+    click_button 'Save and Continue'
+
+    expect(page).to have_css('.alert-danger')
+  end
+
+  it 'cant save credit card with invalid verification number' do
+    credit_card[:cvv] = '0'
+
+    fill_in_cc(credit_card)
+    click_button 'Save and Continue'
+
+    expect(page).to have_css('.alert-danger')
+  end
 
   it 'has correct info on Payment page' do
     full_name = "#{address[:first_name]} #{address[:last_name]}"
@@ -111,7 +161,7 @@ shared_examples 'Payment step' do
   end
 
   it 'can pay via check' do
-    choose('order_payments_attributes__payment_method_id_2')
+    choose 'Check'
 
     click_button 'Save and Continue'
 
@@ -129,9 +179,13 @@ shared_examples 'Payment step' do
 end
 
 shared_examples 'Confirmation step' do
-  before { save_payment(credit_card, 'UPS Two Day (USD)', address) }
+  before do
+    save_address(address)
+    save_delivery('UPS Two Day (USD)')
+    save_payment(credit_card)
+  end
 
-  it 'info is visable' do
+  it 'info is visible' do
     aggregate_failures do
       expect(page).to have_css('div[data-hook="checkout_header"]')
       expect(page).to have_css('.col-sm-3', text: 'Checkout')
@@ -174,56 +228,119 @@ shared_examples 'Confirmation step' do
   end
 end
 
-shared_examples 'can edit on Confirmation step' do |name, title, order_number = nil|
-  before { save_payment(credit_card, 'UPS Two Day (USD)', address) }
+shared_examples 'can edit on Confirmation step' do
+  before do
+    save_address(address)
+    save_delivery('UPS Two Day (USD)')
+    save_payment(credit_card)
+  end
 
-  it name do
-    find('.completed', text: title).click if name.include?('navigation')
-    find('.steps-data').all('h4 a')[order_number].click if name.include?('button')
+  context 'using Navigation' do
+    it 'Billing Address' do
+      find('.completed', text: 'Address').click
+      expect(page).to have_css('.active', text: 'Address')
 
-    expect(page).to have_css('.active', text: title)
+      save_address(address2)
+      save_delivery('UPS Two Day (USD)')
+      save_payment(credit_card)
 
-    if name.include?('Billing')
-      save_payment(credit_card, 'UPS Two Day (USD)', address2)
       order_bill_address = find('div[data-hook="order-bill-address"]')
 
       within(order_bill_address) do
         address2.each do |key, value|
-          # the application changes states to their short titles
-          value = 'IL' if key == :state
+          abbr = Madison.get_abbrev address2[:state]
+          value = abbr if key == :state
+
           expect(page).to have_content(value)
         end
       end
     end
 
-    if name.include?('Shipping Address')
-      save_payment(credit_card, 'UPS Two Day (USD)', address, address2)
+    it 'Shipping method' do
+      find('.completed', text: 'Delivery').click
+      expect(page).to have_css('.active', text: 'Delivery')
+
+      save_delivery('UPS One Day (USD)')
+      save_payment(credit_card)
+
+      expect(page).to have_css('.delivery', text: 'From default via UPS One Day (USD)')
+    end
+    
+    it 'Payment' do
+      find('.completed', text: 'Payment').click
+      expect(page).to have_css('.active', text: 'Payment')
+
+      save_payment(credit_card2)
+
+      expect(page).to have_css('.payment-info', text: 'Ending in 2222')
+    end
+  end
+
+  context 'using button' do
+    it 'Billing Address' do
+      find('.steps-data').all('h4 a')[0].click
+      expect(page).to have_css('.active', text: 'Address')
+
+      save_address(address2)
+      save_delivery('UPS Two Day (USD)')
+      save_payment(credit_card)
+
+      order_bill_address = find('div[data-hook="order-bill-address"]')
+
+      within(order_bill_address) do
+        address2.each do |key, value|
+          abbr = Madison.get_abbrev address2[:state]
+          value = abbr if key == :state
+
+          expect(page).to have_content(value)
+        end
+      end
+    end
+
+    it 'Shipping Address' do
+      find('.steps-data').all('h4 a')[1].click
+      expect(page).to have_css('.active', text: 'Address')
+
+      save_address(address, address2)
+      save_delivery('UPS Two Day (USD)')
+      save_payment(credit_card)
+
       order_bill_address = find('div[data-hook="order-bill-address"]')
       order_ship_address = find('div[data-hook="order-ship-address"]')
 
       within(order_bill_address) do
         address.each do |key, value|
-          value = 'CA' if key == :state
+          abbr = Madison.get_abbrev address[:state]
+          value = abbr if key == :state
+
           expect(page).to have_content(value)
         end
       end
 
       within(order_ship_address) do
         address2.each do |key, value|
-          value = 'IL' if key == :state
+          abbr = Madison.get_abbrev address2[:state]
+          value = abbr if key == :state
+
           expect(page).to have_content(value)
         end
       end
     end
 
-    if name.include?('Shipping method')
+    it 'Shipping method' do
+      find('.steps-data').all('h4 a')[2].click
+      expect(page).to have_css('.active', text: 'Delivery')
+
       save_delivery('UPS One Day (USD)')
-      save_payment(credit_card, 'UPS One Day (USD)')
+      save_payment(credit_card)
 
       expect(page).to have_css('.delivery', text: 'From default via UPS One Day (USD)')
     end
 
-    if name.include?('Payment')
+    it 'Payment' do
+      find('.steps-data').all('h4 a')[3].click
+      expect(page).to have_css('.active', text: 'Payment')
+
       save_payment(credit_card2)
 
       expect(page).to have_css('.payment-info', text: 'Ending in 2222')

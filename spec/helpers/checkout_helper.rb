@@ -12,6 +12,7 @@ module CheckoutHelper
 
   def proceed_as_guest(credentials)
     fill_in 'order_email', with: credentials[:email]
+
     click_button 'Continue'
   end
 
@@ -48,6 +49,7 @@ module CheckoutHelper
 
     if shipping_address
       uncheck 'order_use_billing'
+
       fill_in_shipping(shipping_address)
     end
 
@@ -60,24 +62,7 @@ module CheckoutHelper
     click_button 'Save and Continue'
   end
 
-  def save_payment(card, address = nil)
-    if address
-      save_delivery(address)
-    end
-
-    fill_in_cc(card)
-    click_button 'Save and Continue'
-  end
-
-  def save_payment_with_different_addresses(billing_address, shipping_address, card)
-    save_address(billing_address, shipping_address)
-    click_button 'Save and Continue'
-    click_button 'Save and Continue'
-  end
-
-  def save_payment(card, shipping_method = nil, billing_address = nil, shipping_address = nil)
-    save_delivery(shipping_method, billing_address, shipping_address) if shipping_method
-
+  def save_payment(card)
     choose('use_existing_card_no') if page.has_css?('.card_options')
 
     fill_in_cc(card)
