@@ -44,7 +44,7 @@ end
 
 shared_examples 'Delivery step' do
   before { save_address(address) }
-=begin
+
   it 'has shipping methods, line-items' do
     shipping_method_cost = all('.rate-cost')
     ups_ground = shipping_method_cost[0].text
@@ -73,15 +73,14 @@ shared_examples 'Delivery step' do
     choose('UPS Two Day (USD)')
     expect(page).to have_css('tr[data-hook="shipping_total"]', text: '$10.00')
   end
-=end
-  it 'taxes are calculated correctly' do
-    item_total = find('tr[data-hook="item_total"]').text.split[-1]
-    taxes_percent = find('.total').text.split[-2]
-    taxes = find('.total').text.split[-1]
-    byebug
 
-    # need to change that for a Faker
-    expect(taxes).to eq #calculation total * taxes_percent / 100%
+  it 'taxes are calculated correctly' do
+    item_total = find('tr[data-hook="item_total"]').text.split[-1].gsub('$','').to_f
+    taxes_percent = find('.total').text.split[-2].chop.to_f
+    taxes = find('.total').text.split[-1].gsub('$','').to_f
+    calculation = (item_total * taxes_percent / 100).round(2)
+
+    expect(taxes).to eq calculation
   end
 
   it 'shipping methods can be saved' do
@@ -143,7 +142,7 @@ shared_examples 'Payment step' do
   end
 
   it 'has correct info on Payment page' do
-    full_name = "#{address[:first_name]} #{address[:last_name]}"
+    full_name = "#{address.first_name} #{address.last_name}"
     name_on_card = find('#name_on_card_1').value
 
     aggregate_failures do
@@ -247,11 +246,10 @@ shared_examples 'can edit on Confirmation step' do
       order_bill_address = find('div[data-hook="order-bill-address"]')
 
       within(order_bill_address) do
-        address2.each do |key, value|
-          abbr = Madison.get_abbrev address2[:state]
-          value = abbr if key == :state
+        address2.to_hash.each do |key, value|
+          value = Madison.get_abbrev(value) if key == :state
 
-          expect(page).to have_content(value)
+          expect(order_bill_address).to have_content(value)
         end
       end
     end
@@ -278,7 +276,7 @@ shared_examples 'can edit on Confirmation step' do
 
   context 'using button' do
     it 'Billing Address' do
-      find('.steps-data').all('h4 a')[0].click
+      find('.steps-data').first('h4 a').click
       expect(page).to have_css('.active', text: 'Address')
 
       save_address(address2)
@@ -286,13 +284,11 @@ shared_examples 'can edit on Confirmation step' do
       save_payment(credit_card)
 
       order_bill_address = find('div[data-hook="order-bill-address"]')
-
       within(order_bill_address) do
-        address2.each do |key, value|
-          abbr = Madison.get_abbrev address2[:state]
-          value = abbr if key == :state
+        address2.to_hash.each do |key, value|
+          value = Madison.get_abbrev(value) if key == :state
 
-          expect(page).to have_content(value)
+          expect(order_bill_address).to have_content(value)
         end
       end
     end
@@ -309,20 +305,18 @@ shared_examples 'can edit on Confirmation step' do
       order_ship_address = find('div[data-hook="order-ship-address"]')
 
       within(order_bill_address) do
-        address.each do |key, value|
-          abbr = Madison.get_abbrev address[:state]
-          value = abbr if key == :state
+        address.to_hash.each do |key, value|
+          value = Madison.get_abbrev(value) if key == :state
 
-          expect(page).to have_content(value)
+          expect(order_bill_address).to have_content(value)
         end
       end
 
       within(order_ship_address) do
-        address2.each do |key, value|
-          abbr = Madison.get_abbrev address2[:state]
-          value = abbr if key == :state
+        address2.to_hash.each do |key, value|
+          value = Madison.get_abbrev(value) if key == :state
 
-          expect(page).to have_content(value)
+          expect(order_ship_address).to have_content(value)
         end
       end
     end

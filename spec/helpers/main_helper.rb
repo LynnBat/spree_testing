@@ -26,4 +26,20 @@ module MainHelper
     fill_inputs(email, password, password_confirmation)
     click_button 'Create'
   end
+
+  def credit_card
+    {
+      number:      '4111111111111111',
+      expiry_date: '05/25',
+      cvv:         '2946'
+    }
+  end
+
+  def credit_card2
+    {
+      number:      '4222222222222222',
+      expiry_date: '07/30',
+      cvv:         '2946'
+    }
+  end
 end
