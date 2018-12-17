@@ -44,13 +44,13 @@ module CheckoutHelper
     fill_in 'card_code', with: card[:cvv]
   end
 
-  def save_address(billing_address, shipping_address = nil)
-    fill_in_billing(billing_address)
+  def save_address(addresses)
+    fill_in_billing(addresses[:billing])
 
-    if shipping_address
+    if addresses[:shipping]
       uncheck 'order_use_billing'
 
-      fill_in_shipping(shipping_address)
+      fill_in_shipping(addresses[:shipping])
     end
 
     click_button 'Save and Continue'

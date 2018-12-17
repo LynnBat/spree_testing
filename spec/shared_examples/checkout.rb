@@ -43,7 +43,7 @@ shared_examples 'Address step' do
 end
 
 shared_examples 'Delivery step' do
-  before { save_address(address) }
+  before { save_address(billing: address) }
 
   it 'has shipping methods, line-items' do
     shipping_method_cost = all('.rate-cost')
@@ -75,18 +75,12 @@ shared_examples 'Delivery step' do
   end
 
   it 'taxes are calculated correctly' do
-    item_total = find('tr[data-hook="item_total"]').text.split[-1].gsub('$','').to_f
+    item_total = find('tr[data-hook="item_total"]').text.split[-1].gsub('$', '').to_f
     taxes_percent = find('.total').text.split[-2].chop.to_f
-    taxes = find('.total').text.split[-1].gsub('$','').to_f
+    taxes = find('.total').text.split[-1].gsub('$', '').to_f
     calculation = (item_total * taxes_percent / 100).round(2)
 
     expect(taxes).to eq calculation
-  end
-
-  it 'shipping methods can be saved' do
-    click_button 'Save and Continue'
-
-    expect(page).to have_css('.active', text: 'Payment')
   end
 
   it 'shipping methods can be saved' do
@@ -110,7 +104,7 @@ end
 
 shared_examples 'Payment step' do
   before do
-    save_address(address)
+    save_address(billing: address)
     save_delivery('UPS Two Day (USD)')
   end
 
@@ -179,7 +173,7 @@ end
 
 shared_examples 'Confirmation step' do
   before do
-    save_address(address)
+    save_address(billing: address)
     save_delivery('UPS Two Day (USD)')
     save_payment(credit_card)
   end
@@ -227,9 +221,9 @@ shared_examples 'Confirmation step' do
   end
 end
 
-shared_examples 'can edit on Confirmation step' do
+shared_examples 'Can edit on Confirmation step' do
   before do
-    save_address(address)
+    save_address(billing: address)
     save_delivery('UPS Two Day (USD)')
     save_payment(credit_card)
   end
@@ -239,7 +233,7 @@ shared_examples 'can edit on Confirmation step' do
       find('.completed', text: 'Address').click
       expect(page).to have_css('.active', text: 'Address')
 
-      save_address(address2)
+      save_address(billing: address2)
       save_delivery('UPS Two Day (USD)')
       save_payment(credit_card)
 
@@ -263,7 +257,7 @@ shared_examples 'can edit on Confirmation step' do
 
       expect(page).to have_css('.delivery', text: 'From default via UPS One Day (USD)')
     end
-    
+
     it 'Payment' do
       find('.completed', text: 'Payment').click
       expect(page).to have_css('.active', text: 'Payment')
@@ -276,10 +270,10 @@ shared_examples 'can edit on Confirmation step' do
 
   context 'using button' do
     it 'Billing Address' do
-      find('.steps-data').first('h4 a').click
+      find('h4', text: 'Billing Address').click_link 'Edit'
       expect(page).to have_css('.active', text: 'Address')
 
-      save_address(address2)
+      save_address(billing: address2)
       save_delivery('UPS Two Day (USD)')
       save_payment(credit_card)
 
@@ -294,10 +288,10 @@ shared_examples 'can edit on Confirmation step' do
     end
 
     it 'Shipping Address' do
-      find('.steps-data').all('h4 a')[1].click
+      find('h4', text: 'Shipping Address').click_link 'Edit'
       expect(page).to have_css('.active', text: 'Address')
 
-      save_address(address, address2)
+      save_address(billing: address, shipping: address2)
       save_delivery('UPS Two Day (USD)')
       save_payment(credit_card)
 
@@ -322,7 +316,7 @@ shared_examples 'can edit on Confirmation step' do
     end
 
     it 'Shipping method' do
-      find('.steps-data').all('h4 a')[2].click
+      find('h4', text: 'Shipments').click_link 'Edit'
       expect(page).to have_css('.active', text: 'Delivery')
 
       save_delivery('UPS One Day (USD)')
@@ -332,7 +326,7 @@ shared_examples 'can edit on Confirmation step' do
     end
 
     it 'Payment' do
-      find('.steps-data').all('h4 a')[3].click
+      find('h4', text: 'Payment Information').click_link 'Edit'
       expect(page).to have_css('.active', text: 'Payment')
 
       save_payment(credit_card2)

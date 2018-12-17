@@ -1,5 +1,5 @@
 describe 'shopping_cart' do
-  let(:credentials) { Credentials.new}
+  let(:credentials) { Credentials.new }
   let(:address)     { Address.new }
   let(:address2)    { Address.new }
 
@@ -20,7 +20,7 @@ describe 'shopping_cart' do
 
     it_should_behave_like 'Confirmation step'
 
-    it_should_behave_like 'can edit on Confirmation step'
+    it_should_behave_like 'Can edit on Confirmation step'
   end
 
   context 'Guest' do
@@ -34,6 +34,6 @@ describe 'shopping_cart' do
 
     it_should_behave_like 'Confirmation step'
 
-    it_should_behave_like 'can edit on Confirmation step'
+    it_should_behave_like 'Can edit on Confirmation step'
   end
 end
