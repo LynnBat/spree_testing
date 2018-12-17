@@ -8,6 +8,7 @@ require 'show_me_the_cookies'
 # Adding helpers to all Specs
 Dir['./spec/helpers/**/*.rb'].each { |file| require file }
 Dir['./spec/shared_examples/**/*.rb'].each { |file| require file }
+Dir['./spec/support/**/*.rb'].each { |file| require file }
 
 # New driver for Chrome browser
 Capybara.register_driver :chrome do |app|

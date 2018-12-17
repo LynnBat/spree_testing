@@ -1,29 +1,31 @@
 describe 'pdp' do
-  before(:all) do
-    login(ENV['ADMIN_SPREE'], ENV['ADMIN_PASSWORD_SPREE'])
+  let(:router) { Router.new }
 
-    visit '/admin/products/ruby-on-rails-baseball-jersey/edit'
-    byebug
+  before(:each) do
+    admin_login
+
+    visit router.admin_item_path
+
     @title = find('#product_name').value
     @description = find('#product_description').value
     @price = find('#product_price').value
 
-    visit '/admin/products/ruby-on-rails-baseball-jersey/variants'
+    visit router.admin_item_variants_path
     @variants = []
     table = find('.ui-sortable').all('tr')
     table.each do |variant|
       within(variant) { @variants << all('td')[1].text }
     end
 
-    visit '/admin/products/ruby-on-rails-baseball-jersey/product_properties'
+    visit router.admin_item_properties_path
     @properties = all('.form-control').collect(&:value).reject(&:empty?)
 
     Capybara.reset_session!
   end
 
-  before { visit '/products/ruby-on-rails-baseball-jersey' }
+  before { visit router.pdp_path }
 
-  context 'breadcrumbs' do
+  context 'Breadcrumbs' do
     it 'are present' do
       expect(page).to have_css('.breadcrumb')
     end
@@ -50,7 +52,7 @@ describe 'pdp' do
     end
   end
 
-  context 'picture' do
+  context 'Pictures' do
     it 'are present' do
       byebug
       # expect(page).to have_css("img[src*='ror_baseball_jersey_red.png']")
@@ -80,12 +82,25 @@ describe 'pdp' do
         expect(page).to have_css('.product-section-title', text: 'Properties')
       end
     end
+
+    it 'can choose any variant' do
+      variants = all('.variant-description').collect(&:text)
+
+      variants.each do |variant|
+        choose variant
+        click_button 'Add To Cart'
+
+        descr = find('.cart-item-description').text
+        expect(descr).to include variant
+
+        find('.delete').click
+
+        visit router.pdp_path
+      end
+    end
   end
 
   context 'description block' do
-    it 'can choose any variant' do
-      byebug
-    end
     xit 'can change the quantity: to write it, to use the arrows'
     xit 'can add to the card'
   end
