@@ -4,9 +4,14 @@ describe 'pdp' do
   context 'All elements are present' do
     before { admin_login }
 
+    it 'has same breadcrumbs as in Admin Panel' do
+      visit router.admin_item_path
+      byebug
+    end
+
     it 'has Product title' do
       visit router.admin_item_path
-      @title = find('#product_name').value
+      title = find('#product_name').value
 
       Capybara.reset_session!
 
@@ -14,12 +19,12 @@ describe 'pdp' do
 
       pdp_title = find('.product-title').text
 
-      expect(pdp_title).to eq @title
+      expect(pdp_title).to eq title
     end
 
     it 'has description' do
       visit router.admin_item_path
-      @description = find('#product_description').value
+      description = find('#product_description').value
 
       Capybara.reset_session!
 
@@ -27,12 +32,12 @@ describe 'pdp' do
 
       pdp_description = find('.well').text
 
-      expect(pdp_description).to eq @description
+      expect(pdp_description).to eq description
     end
 
     it 'has price' do
       visit router.admin_item_path
-      @price = find('#product_price').value
+      price = find('#product_price').value
 
       Capybara.reset_session!
 
@@ -40,12 +45,12 @@ describe 'pdp' do
 
       pdp_price = find('.lead.price.selling').text
 
-      expect(pdp_price).to include @price
+      expect(pdp_price).to include price
     end
 
     it 'has pictures' do
       visit router.admin_item_pictures_path
-      @pictures = find('.table.sortable').all('img').collect { |img| img[:src].split('/').last }
+      pictures = find('.table.sortable').all('img').collect { |img| img[:src].split('/').last }
 
       Capybara.reset_session!
 
@@ -59,15 +64,15 @@ describe 'pdp' do
         pdp_pictures += find_picture_names(2..3)
       end
 
-      expect(pdp_pictures).to eq @pictures
+      expect(pdp_pictures).to eq pictures
     end
 
     it 'has variants' do
       visit router.admin_item_variants_path
-      @variants = []
+      variants = []
       table = find('.ui-sortable').all('tr')
       table.each do |variant|
-        within(variant) { @variants << all('td')[1].text }
+        within(variant) { variants << all('td')[1].text }
       end
 
       Capybara.reset_session!
@@ -76,12 +81,12 @@ describe 'pdp' do
 
       pdp_variants = all('.variant-description').collect(&:text)
 
-      expect(pdp_variants).to eq @variants
+      expect(pdp_variants).to eq variants
     end
 
     it 'has properties' do
       visit router.admin_item_properties_path
-      @properties = all('.form-control').collect(&:value).reject(&:empty?)
+      properties = all('.form-control').collect(&:value).reject(&:empty?)
 
       Capybara.reset_session!
 
@@ -89,10 +94,10 @@ describe 'pdp' do
 
       pdp_properties = find('#product-properties').all('td').collect(&:text)
 
-      expect(pdp_properties).to eq @properties
+      expect(pdp_properties).to eq properties
     end
 
-    it 'has titles and breadcrumbs' do
+    it 'has section titles and breadcrumbs' do
       visit router.pdp_path
 
       aggregate_failures do
@@ -158,7 +163,7 @@ describe 'pdp' do
     end
 
     it 'can change the quantity' do
-      quantity_pdp = rand(1..10)
+      quantity_pdp = rand(2..10)
       fill_in 'quantity', with: quantity_pdp
 
       click_button 'Add To Cart'

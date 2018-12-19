@@ -44,10 +44,8 @@ Capybara.default_driver = case ENV['browser']
 ShowMeTheCookies.register_adapter(ENV['browser'].to_sym, ShowMeTheCookies::Selenium)
 
 Capybara.app_host = 'https://lynn-spree.herokuapp.com'
-# 'https://spree-qa-lynn.herokuapp.com'
 
 Capybara.run_server = false
-# Capybara.page.driver.browser.manage.window.maximize
 
 RSpec.configure do |config|
   config.include Capybara::DSL
