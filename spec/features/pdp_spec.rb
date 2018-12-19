@@ -2,19 +2,67 @@ describe 'pdp' do
   let(:router) { Router.new }
 
   context 'All elements are present' do
-    before do
-      admin_login
+    before { admin_login }
 
+    it 'has Product title' do
       visit router.admin_item_path
-      byebug
-
       @title = find('#product_name').value
+
+      Capybara.reset_session!
+
+      visit router.pdp_path
+
+      pdp_title = find('.product-title').text
+
+      expect(pdp_title).to eq @title
+    end
+
+    it 'has description' do
+      visit router.admin_item_path
       @description = find('#product_description').value
+
+      Capybara.reset_session!
+
+      visit router.pdp_path
+
+      pdp_description = find('.well').text
+
+      expect(pdp_description).to eq @description
+    end
+
+    it 'has price' do
+      visit router.admin_item_path
       @price = find('#product_price').value
 
-      visit admin_item_variants_path
+      Capybara.reset_session!
+
+      visit router.pdp_path
+
+      pdp_price = find('.lead.price.selling').text
+
+      expect(pdp_price).to include @price
+    end
+
+    it 'has pictures' do
+      visit router.admin_item_pictures_path
       @pictures = find('.table.sortable').all('img').collect { |img| img[:src].split('/').last }
 
+      Capybara.reset_session!
+
+      visit router.pdp_path
+
+      pdp_pictures = find_picture_names(0..1)
+      variants = all('.variant-description').collect(&:text)
+
+      variants.each do |variant|
+        choose variant
+        pdp_pictures += find_picture_names(2..3)
+      end
+
+      expect(pdp_pictures).to eq @pictures
+    end
+
+    it 'has variants' do
       visit router.admin_item_variants_path
       @variants = []
       table = find('.ui-sortable').all('tr')
@@ -22,40 +70,37 @@ describe 'pdp' do
         within(variant) { @variants << all('td')[1].text }
       end
 
+      Capybara.reset_session!
+
+      visit router.pdp_path
+
+      pdp_variants = all('.variant-description').collect(&:text)
+
+      expect(pdp_variants).to eq @variants
+    end
+
+    it 'has properties' do
       visit router.admin_item_properties_path
       @properties = all('.form-control').collect(&:value).reject(&:empty?)
 
       Capybara.reset_session!
 
       visit router.pdp_path
+
+      pdp_properties = find('#product-properties').all('td').collect(&:text)
+
+      expect(pdp_properties).to eq @properties
     end
 
-    it 'info' do
-      pdp_title = find('.product-title').text
-      pdp_description = find('.well').text
-      pdp_price = find('.lead.price.selling').text
-      pdp_variants = all('.variant-description').collect(&:text)
-      pdp_properties = find('#product-properties').all('td').collect(&:text)
+    it 'has titles and breadcrumbs' do
+      visit router.pdp_path
 
       aggregate_failures do
         expect(page).to have_css('.breadcrumb')
-        expect(pdp_title).to eq @title
-        expect(pdp_description).to eq @description
-        expect(pdp_price).to include @price
-        expect(pdp_variants).to eq @variants
-        expect(pdp_properties).to eq @properties
         expect(page).to have_css('.product-section-title', text: 'Properties')
         expect(page).to have_css('.product-section-title', text: 'Variants')
         expect(page).to have_css('.product-section-title', text: 'Look for similar items')
       end
-    end
-
-    it 'pictures' do
-      byebug
-      pdp_pictures = find('.thumbnails.list-inline').all('img')[0..1].collect { |img| img[:src].split('/').last }
-      # expect(page).to have_css("img[src*='ror_baseball_jersey_red.png']")
-      # @pictures[2..-1].each
-      expect(pdp_pictures).to eq @pictures
     end
   end
 
@@ -77,9 +122,23 @@ describe 'pdp' do
       end
     end
 
-    xit 'can choose different picture'
-    xit 'while hovering the picture, main is changed' do
-      # all('img.thumbnail').last.hover
+    it 'while hovering the picture, main is changed' do
+      variants = all('.variant-description').collect(&:text)
+
+      variants.each do |variant|
+        choose variant
+
+        pictures = find('.thumbnails.list-inline').all('img')
+
+        pictures.each do |picture|
+          variant_picture = picture[:src].split('/').last
+          picture.hover
+
+          main_picture = within('.text-center') { find('img')[:src].split('/').last }
+
+          expect(variant_picture).to eq main_picture
+        end
+      end
     end
 
     it 'can choose any variant' do
@@ -89,8 +148,8 @@ describe 'pdp' do
         choose variant
         click_button 'Add To Cart'
 
-        descr = find('.cart-item-description').text
-        expect(descr).to include variant
+        details = find('.cart-item-description').text
+        expect(details).to include variant
 
         find('.delete').click
 
@@ -101,6 +160,7 @@ describe 'pdp' do
     it 'can change the quantity' do
       quantity_pdp = rand(1..10)
       fill_in 'quantity', with: quantity_pdp
+
       click_button 'Add To Cart'
 
       quantity_cart = find('.line_item_quantity').value.to_i
@@ -120,5 +180,5 @@ describe 'pdp' do
         go_back
       end
     end
-  end  
+  end
 end
