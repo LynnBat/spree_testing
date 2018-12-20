@@ -159,13 +159,12 @@ describe 'pdp' do
     end
 
     it 'can change the quantity' do
-      quantity_pdp = rand(2..10)
-      fill_in 'quantity', with: quantity_pdp
+      fill_in 'quantity', with: 3
 
       click_button 'Add To Cart'
 
       quantity_cart = find('.line_item_quantity').value.to_i
-      expect(quantity_pdp).to eq quantity_cart
+      expect(quantity_cart).to eq 3
     end
 
     it 'can add to the card' do
@@ -177,7 +176,7 @@ describe 'pdp' do
       names = all('.list-group-item').collect(&:text)
       names.each do |item|
         within('#taxon-crumbs') { click_link item }
-        expect(page.current_url).to eq "#{Capybara.app_host}/t/#{item.downcase}"
+        expect(page.current_url).to include item.downcase
         go_back
       end
     end

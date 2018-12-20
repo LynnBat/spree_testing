@@ -54,10 +54,7 @@ RSpec.configure do |config|
   config.include PDPHelper
   config.include ShowMeTheCookies
 
-  config.after do
-    logout
-    Capybara.reset_session!
-  end
+  config.after { logout }
   
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
