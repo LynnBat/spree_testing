@@ -3,23 +3,23 @@ describe 'links' do
 
   it 'has Logo link' do
     find('#logo').find('a').click
-    expect(page.current_url).to eq "#{Capybara.app_host}/"
+    expect(page.current_url).to eql "#{Capybara.app_host}/"
   end
 
   context 'header' do
     it 'has Login link' do
       find('#link-to-login').click
-      expect(page.current_url).to eq "#{Capybara.app_host}/login"
+      expect(page.current_url).to eql "#{Capybara.app_host}/login"
     end
 
     it 'has Cart link' do
       find('#link-to-cart').click
-      expect(page.current_url).to eq "#{Capybara.app_host}/cart"
+      expect(page.current_url).to eql "#{Capybara.app_host}/cart"
     end
 
     it 'has Home link' do
       find('#home-link').click
-      expect(page.current_url).to eq "#{Capybara.app_host}/"
+      expect(page.current_url).to eql "#{Capybara.app_host}/"
     end
   end
 
@@ -30,7 +30,7 @@ describe 'links' do
         list_group_item = find_list_group_items(taxonomy_index)[item_index]
         list_group_item_name = list_group_item.text.downcase
         list_group_item.click
-        expect(page.current_url).to eq "#{Capybara.app_host}/t/#{list_group_item_name}"
+        expect(page.current_url).to eql "#{Capybara.app_host}/t/#{list_group_item_name}"
       end
     end
   end
