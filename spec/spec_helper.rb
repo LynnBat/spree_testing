@@ -8,10 +8,14 @@ require 'show_me_the_cookies'
 # Adding helpers to all Specs
 Dir['./spec/helpers/**/*.rb'].each { |file| require file }
 Dir['./spec/shared_examples/**/*.rb'].each { |file| require file }
+Dir['./spec/support/**/*.rb'].each { |file| require file }
 
 # New driver for Chrome browser
 Capybara.register_driver :chrome do |app|
-  Capybara::Selenium::Driver.new(app, browser: :chrome)
+  prefs = { 'profile.managed_default_content_settings.notifications' => 2 }
+  options = %w[incognito start-maximized disable-notifications]
+
+  Capybara::Selenium::Driver.new(app, browser: :chrome, options: Selenium::WebDriver::Chrome::Options.new(args: options, prefs: prefs))
 end
 
 # New driver for Firefox browser
@@ -39,20 +43,18 @@ Capybara.default_driver = case ENV['browser']
 
 ShowMeTheCookies.register_adapter(ENV['browser'].to_sym, ShowMeTheCookies::Selenium)
 
-Capybara.app_host = 'https://spree-qa-lynn.herokuapp.com'
+Capybara.app_host = 'https://lynn-spree.herokuapp.com'
 
 Capybara.run_server = false
-Capybara.page.driver.browser.manage.window.maximize
 
 RSpec.configure do |config|
   config.include Capybara::DSL
   config.include MainHelper
   config.include LinksHelper
+  config.include PDPHelper
   config.include ShowMeTheCookies
 
-  config.after do
-    Capybara.reset_sessions!
-  end
+  config.after { logout }
   
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true

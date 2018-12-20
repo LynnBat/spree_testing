@@ -11,6 +11,10 @@ module MainHelper
     click_button 'Login'
   end
 
+  def admin_login
+    login(ENV['ADMIN_SPREE'], ENV['ADMIN_PASSWORD_SPREE'])
+  end
+
   def create_user(email, password, password_confirmation)
     visit '/signup'
     fill_inputs(email, password, password_confirmation)
