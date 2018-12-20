@@ -5,15 +5,17 @@ describe 'pdp' do
     before { admin_login }
 
     it 'has same breadcrumbs as in Admin Panel' do
-      visit router.admin_item_path
-      byebug
+      taxons = info_from_admin_panel('.select2-search-choice', 'Categories').split(' -> ')
+
+      visit router.pdp_path
+
+      pdp_taxons = find('.breadcrumb').all('a').collect(&:text)[2..-1]
+
+      expect(pdp_taxons).to eq taxons
     end
 
     it 'has Product title' do
-      visit router.admin_item_path
-      title = find('#product_name').value
-
-      Capybara.reset_session!
+      title = info_from_admin_panel('#product_name')
 
       visit router.pdp_path
 
@@ -23,10 +25,7 @@ describe 'pdp' do
     end
 
     it 'has description' do
-      visit router.admin_item_path
-      description = find('#product_description').value
-
-      Capybara.reset_session!
+      description = info_from_admin_panel('#product_description')
 
       visit router.pdp_path
 
@@ -36,10 +35,7 @@ describe 'pdp' do
     end
 
     it 'has price' do
-      visit router.admin_item_path
-      price = find('#product_price').value
-
-      Capybara.reset_session!
+      price = info_from_admin_panel('#product_price')
 
       visit router.pdp_path
 
