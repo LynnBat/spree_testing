@@ -1,27 +1,13 @@
 describe 'links' do
   before { visit '/' }
 
-  it 'has Logo link' do
-    find('#logo').find('a').click
-    expect(page.current_url).to eq "#{Capybara.app_host}/"
-  end
+  it_should_behave_like 'link leads to', 'Logo', '#logo a', '/'
 
-  context 'header' do
-    it 'has Login link' do
-      find('#link-to-login').click
-      expect(page.current_url).to eq "#{Capybara.app_host}/login"
-    end
+  it_should_behave_like 'link leads to', 'Login Page', '#link-to-login', '/login'
 
-    it 'has Cart link' do
-      find('#link-to-cart').click
-      expect(page.current_url).to eq "#{Capybara.app_host}/cart"
-    end
+  it_should_behave_like 'link leads to', 'Cart', '.cart-info', '/cart'
 
-    it 'has Home link' do
-      find('#home-link').click
-      expect(page.current_url).to eq "#{Capybara.app_host}/"
-    end
-  end
+  it_should_behave_like 'link leads to', 'Home Page', '#home-link', '/'
 
   it 'has Taxonomies links' do
     all('.list-group').count.times do |taxonomy_index|

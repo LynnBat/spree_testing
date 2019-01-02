@@ -4,6 +4,7 @@ require 'capybara/dsl'
 require 'rspec/expectations'
 require 'faker'
 require 'show_me_the_cookies'
+require 'madison'
 
 # Adding helpers to all Specs
 Dir['./spec/helpers/**/*.rb'].each { |file| require file }
@@ -53,8 +54,9 @@ RSpec.configure do |config|
   config.include LinksHelper
   config.include PDPHelper
   config.include ShowMeTheCookies
+  config.include CheckoutHelper
 
-  config.after { logout }
+  config.after { Capybara.reset_session! }
   
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
