@@ -18,4 +18,8 @@ class Router
   def admin_item_properties_path
     '/admin/products/ruby-on-rails-baseball-jersey/product_properties'
   end
+
+  def admin_products_path
+    '/admin/products'
+  end
 end
