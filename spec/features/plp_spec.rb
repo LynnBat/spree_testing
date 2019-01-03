@@ -1,22 +1,9 @@
 describe 'plp' do
   let(:router) { Router.new }
 
-  before { visit '/' }
-
-  it 'has all products' do
-    # loop: goes to AP -> availble product, stores some info, goes to PLP and finds it there
-    # if it can't find - click 'Next' and look for it again
-    admin_login
-    visit router.admin_products_path
-    byebug
-  end
-
-  xit 'has 12 products per page' do
-    # loop: goes to AP -> counts all products -> goes to plp counts products -> -all
-    # if products<12 and all_products!= 0 -> błęd
-  end
-
   it 'displays all breadcrumbs' do
+    visit '/'
+
     all('.list-group').count.times do |taxonomy_index|
       items_amount = find_list_group_items(taxonomy_index).count
       items_amount.times do |item_index|
@@ -53,8 +40,39 @@ describe 'plp' do
     end
   end
 
-  xit 'can sort by Categories'
-  xit 'can sort by Subcategories'
-  xit 'can sort by Brands'
-  xit 'can sort by Price'
+  context 'Admin Panel' do
+    before do
+      admin_login
+      visit router.admin_products_path
+    end
+
+    it 'has all products' do
+    # loop: goes to AP -> availble product, stores some info, goes to PLP and finds it there
+    # if it can't find - click 'Next' and look for it again
+      within('#listing_products') do
+        products = all('tr[data-hook="admin_products_index_rows"]', text: 'Available')
+        products.each do |product|
+          picture = all('img').collect { |img| img[:src].split('/').last }
+          title = all('td')[3].text
+          price = all('td')[4].text
+
+          visit '/'
+
+          byebug
+
+          #within() { find }
+        end
+      end
+    end
+
+    xit 'has 12 products per page' do
+    # loop: goes to AP -> counts all products -> goes to plp counts products -> -all
+    # if products<12 and all_products!= 0 -> błęd
+    end
+
+    xit 'can sort by Categories'
+    xit 'can sort by Subcategories'
+    xit 'can sort by Brands'
+    xit 'can sort by Price'
+  end
 end
