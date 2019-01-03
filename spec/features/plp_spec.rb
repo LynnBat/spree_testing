@@ -3,34 +3,20 @@ describe 'plp' do
 
   before { visit '/' }
 
-  it 'halo' do
+  it 'has all products' do
+    # loop: goes to AP -> availble product, stores some info, goes to PLP and finds it there
+    # if it can't find - click 'Next' and look for it again
+    admin_login
+    visit router.admin_products_path
     byebug
   end
 
-  xit 'has all products' do
-    # loop, goes to AP -> product, stores some info, goes to PLP and finds it there
-    # if it can't find - click 'Next' and look for it again
-    visit router.admin_products_path
+  xit 'has 12 products per page' do
+    # loop: goes to AP -> counts all products -> goes to plp counts products -> -all
+    # if products<12 and all_products!= 0 -> błęd
   end
 
-  xit 'has 12 products per page'
-
-  it 'displays list-groop breadcrumb' do
-    all('.list-group').count.times do |taxonomy_index|
-      items_amount = find_list_group_items(taxonomy_index).count
-      items_amount.times do |item_index|
-        list_group_item = find_list_group_items(taxonomy_index)[item_index]
-        list_group_item_name = list_group_item.text
-        list_group_item.click
-
-        breadcrumbs = find('.breadcrumb').all('a').collect(&:text)
-
-        expect(breadcrumbs).to include list_group_item_name
-      end
-    end
-  end
-
-  it 'displays taxonomy breadcrumb' do
+  it 'displays all breadcrumbs' do
     all('.list-group').count.times do |taxonomy_index|
       items_amount = find_list_group_items(taxonomy_index).count
       items_amount.times do |item_index|
@@ -47,17 +33,28 @@ describe 'plp' do
           taxonomies.slice!(0)
         end
 
-        byebug
-        # variable with a loop -> one element of breadcrumbs = one element taxonomies
-        # expect variable = true
+        taxonomy_breadcrumb_present = false
+
+        breadcrumbs.each do |breadcrumb|
+          taxonomies.each do |taxonomy|
+            if taxonomy == breadcrumb
+              taxonomy_breadcrumb_present = true
+            end
+          end
+        end
+
+        aggregate_failures do
+          expect(breadcrumbs).to include "Home"
+          expect(breadcrumbs).to include "Products"
+          expect(taxonomy_breadcrumb_present).to eq true
+          expect(breadcrumbs).to include list_group_item_name
+        end
       end
     end
   end
 
-  xit 'breadcrumps work'
-
-  xit 'can sort by Categories' # done in links_spec.rb
+  xit 'can sort by Categories'
   xit 'can sort by Subcategories'
-  xit 'can sort by Brands' # done in links_spec.rb
+  xit 'can sort by Brands'
   xit 'can sort by Price'
 end
