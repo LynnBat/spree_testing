@@ -48,24 +48,27 @@ describe 'plp' do
 
     it 'has all products' do
       products = all('tr[data-hook="admin_products_index_rows"]', text: 'Available')
-      products.each do |product|
-        within product do
-          @picture = find('img')[:src].split('/').last
-          @title = all('td')[3].text
-          @price = all('td')[4].text
+
+      pictures = products.collect { |product| product.find('img')[:src].split('/').last }
+      titles   = products.collect { |product| product.all('td')[3].text }
+      prices   = products.collect { |product| product.all('td')[4].text }
+
+      visit '/'
+
+      titles.each_with_index do |title, index|
+        while !page.has_css?('.panel-default', text: title) do
+          click_link 'Next'
+        end
+
+        pdp_product = find('.panel-default', text: title)
+        pdp_picture = pdp_product.find('img')[:src].split('/').last
+
+        aggregate_failures do
+          expect(pdp_product.text).to include prices[index]
+          expect(pdp_picture).to eq pictures[index]
         end
 
         visit '/'
-
-        a = find('.panel-default', text: @title)
-        pdp_picture = a.find('img')[:src].split('/').last
-
-        aggregate_failures do
-          expect(a.text).to include @price
-          expect(pdp_picture).to eq @picture
-        end
-
-        visit router.admin_products_path
       end
     end
 
