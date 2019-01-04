@@ -47,21 +47,25 @@ describe 'plp' do
     end
 
     it 'has all products' do
-    # loop: goes to AP -> availble product, stores some info, goes to PLP and finds it there
-    # if it can't find - click 'Next' and look for it again
-      within('#listing_products') do
-        products = all('tr[data-hook="admin_products_index_rows"]', text: 'Available')
-        products.each do |product|
-          picture = all('img').collect { |img| img[:src].split('/').last }
-          title = all('td')[3].text
-          price = all('td')[4].text
-
-          visit '/'
-
-          byebug
-
-          #within() { find }
+      products = all('tr[data-hook="admin_products_index_rows"]', text: 'Available')
+      products.each do |product|
+        within product do
+          @picture = find('img')[:src].split('/').last
+          @title = all('td')[3].text
+          @price = all('td')[4].text
         end
+
+        visit '/'
+
+        a = find('.panel-default', text: @title)
+        pdp_picture = a.find('img')[:src].split('/').last
+
+        aggregate_failures do
+          expect(a.text).to include @price
+          expect(pdp_picture).to eq @picture
+        end
+
+        visit router.admin_products_path
       end
     end
 
