@@ -13,10 +13,19 @@ Dir['./spec/support/**/*.rb'].each { |file| require file }
 
 # New driver for Chrome browser
 Capybara.register_driver :chrome do |app|
-  prefs = { 'profile.managed_default_content_settings.notifications' => 2 }
-  options = %w[incognito start-maximized disable-notifications]
+  capabilities = Selenium::WebDriver::Remote::Capabilities.chrome(
+    chromeOptions: {
+      args: [
+        ('headless' if ENV.fetch('HEADLESS', '0') == '1')
+      ].compact
+    }   
+  )
 
-  Capybara::Selenium::Driver.new(app, browser: :chrome, options: Selenium::WebDriver::Chrome::Options.new(args: options, prefs: prefs))
+  Capybara::Selenium::Driver.new(
+    app,
+    browser: :chrome,
+    desired_capabilities: capabilities
+  )
 end
 
 # New driver for Firefox browser
