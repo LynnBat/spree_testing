@@ -53,7 +53,7 @@ Capybara.default_driver = case ENV['browser']
 
 ShowMeTheCookies.register_adapter(ENV['browser'].to_sym, ShowMeTheCookies::Selenium)
 
-Capybara.app_host = 'https://lynn-spree.herokuapp.com'
+Capybara.app_host = 'https://piotr-spree.herokuapp.com/'
 
 Capybara.run_server = false
 

@@ -55,7 +55,9 @@ describe 'plp' do
           sorted_products = all('span.info').collect(&:text)
           sorted_products.each do |product|
             visit router.admin_products_path
+
             find('a', text: product).click
+
             taxons = find('#s2id_product_taxon_ids')
             within(taxons) { expect(page).to have_content list_group_item_name }
           end
@@ -81,7 +83,7 @@ describe 'plp' do
           within(taxons) { expect(page).to have_content taxonomy }
         end
 
-        visit router.plp_with_subcategories
+        visit router.plp_with_subcategories_path
       end
     end
 
@@ -90,23 +92,56 @@ describe 'plp' do
 
       products_prices = Hash.new
 
-      all('.panel-default').each do |item|
-        product = item.find('.product-body').text
-        price = item.find('.price.selling.lead').text
+      if page.has_css?('.page')
+        all('.page').count.times do
+          all('.panel-default').each do |item|
+            product = item.find('.product-body').text
+            price = item.find('.price.selling.lead').text.gsub('$', '').to_f
 
-        products_prices[product] = price
+            products_prices[product] = price
+            click_link 'Next' if page.has_css?('.next_page')
+          end
+        end
+      else
+        all('.panel-default').each do |item|
+          product = item.find('.product-body').text
+          price = item.find('.price.selling.lead').text.gsub('$', '').to_f
 
-        # check next pages if applicable
+          products_prices[product] = price
+        end
       end
-      byebug
 
-      # pobrać all products and sort them
-      # loop: click -> expect amount of items
+      within('.navigation', text: 'Price Range') { @prices = all('input').collect(&:value) }
 
-      within('.navigation', text: 'Price Range') { @prices = all('input') }
       @prices.each do |price|
-        price.click
+        if price.include?('under')
+          max_price = price.split(' ')[1].gsub('$', '')
+          sorted_hash = products_prices.select { |key, value| value <= max_price.to_f }
+        elsif price.include?('over')
+          min_price = price.split(' ')[0].gsub('$', '')
+          sorted_hash = products_prices.select { |key, value| value >= min_price.to_f }
+        else
+          range = price.gsub('$', '').gsub('-','').split(' ')
+          sorted_hash = products_prices.select { |key, value| value >= range[0].to_f && value <= range[1].to_f }
+        end
+
+        check price
         find('.btn-primary').click
+
+        sorted_array = sorted_hash.keys
+
+        if page.has_css?('.panel-default')
+          sorted_products = all('span.info').collect(&:text)
+
+          expect(sorted_array).to eq sorted_products
+        else
+          aggregate_failures do
+            expect(page).to have_css('[data-hook="products_search_results_heading"]', text: 'No products found')
+            a = {}
+          end
+        end
+
+        visit router.rails_category_path
       end
     end
   end
@@ -140,6 +175,7 @@ describe 'plp' do
         end
 
         visit '/'
+
       end
     end
 
