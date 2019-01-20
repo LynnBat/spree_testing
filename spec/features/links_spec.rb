@@ -10,18 +10,14 @@ describe 'links' do
   it_should_behave_like 'link leads to', 'Home Page', '#home-link', '/'
 
   it 'has Taxonomies links' do
-    all('.list-group').count.times do |taxonomy_index|
-      items_amount = find_list_group_items(taxonomy_index).count
-      items_amount.times do |item_index|
-        list_group_item = find_list_group_items(taxonomy_index)[item_index]
-        list_group_item_name = list_group_item.text
-        list_group_item.click
-        title = find('.taxon-title').text
+    taxonomies = all('.list-group-item').collect(&:text)
+    taxonomies.each do |taxonomy|
+      click_link taxonomy
+      title = find('.taxon-title').text
 
-        aggregate_failures do
-          expect(page.current_url).to include list_group_item_name.downcase
-          expect(title).to eq list_group_item_name
-        end
+      aggregate_failures do
+        expect(page.current_url).to include taxonomy.downcase
+        expect(title).to eq taxonomy
       end
     end
   end

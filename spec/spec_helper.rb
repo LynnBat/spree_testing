@@ -61,6 +61,7 @@ RSpec.configure do |config|
   config.include Capybara::DSL
   config.include MainHelper
   config.include PDPHelper
+  config.include PLPHelper
   config.include ShowMeTheCookies
   config.include CheckoutHelper
 
