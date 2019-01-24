@@ -1,22 +1,25 @@
 describe 'links' do
-  before { visit '/' }
+  let(:router) { Router.new }
 
-  it_should_behave_like 'link leads to', 'Logo', '#logo a', '/'
+  before { visit router.root_path }
 
-  it_should_behave_like 'link leads to', 'Login Page', '#link-to-login', '/login'
+  it_should_behave_like 'link leads to', 'Logo', '#logo a', ''
 
-  it_should_behave_like 'link leads to', 'Cart', '.cart-info', '/cart'
+  it_should_behave_like 'link leads to', 'Login Page', '#link-to-login', 'login'
 
-  it_should_behave_like 'link leads to', 'Home Page', '#home-link', '/'
+  it_should_behave_like 'link leads to', 'Cart', '.cart-info', 'cart'
+
+  it_should_behave_like 'link leads to', 'Home Page', '#home-link', ''
 
   it 'has Taxonomies links' do
-    all('.list-group').count.times do |taxonomy_index|
-      items_amount = find_list_group_items(taxonomy_index).count
-      items_amount.times do |item_index|
-        list_group_item = find_list_group_items(taxonomy_index)[item_index]
-        list_group_item_name = list_group_item.text.downcase
-        list_group_item.click
-        expect(page.current_url).to eq "#{Capybara.app_host}/t/#{list_group_item_name}"
+    taxonomies = all('.list-group-item').collect(&:text)
+    taxonomies.each do |taxonomy|
+      click_link taxonomy
+      title = find('.taxon-title').text
+
+      aggregate_failures do
+        expect(page.current_url).to include taxonomy.downcase
+        expect(title).to eq taxonomy
       end
     end
   end

@@ -1,6 +1,18 @@
 class Router
+  def root_path
+    '/'
+  end
+
   def pdp_path
     '/products/ruby-on-rails-baseball-jersey'
+  end
+
+  def plp_with_subcategories_path
+    '/t/clothing'
+  end
+
+  def rails_category_path
+    '/t/rails'
   end
 
   def admin_item_path
@@ -17,5 +29,9 @@ class Router
 
   def admin_item_properties_path
     '/admin/products/ruby-on-rails-baseball-jersey/product_properties'
+  end
+
+  def admin_products_path
+    '/admin/products'
   end
 end
