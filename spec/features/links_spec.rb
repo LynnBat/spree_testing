@@ -1,13 +1,15 @@
 describe 'links' do
-  before { visit '/' }
+  let(:router) { Router.new }
 
-  it_should_behave_like 'link leads to', 'Logo', '#logo a', '/'
+  before { visit router.root_path }
 
-  it_should_behave_like 'link leads to', 'Login Page', '#link-to-login', '/login'
+  it_should_behave_like 'link leads to', 'Logo', '#logo a', ''
 
-  it_should_behave_like 'link leads to', 'Cart', '.cart-info', '/cart'
+  it_should_behave_like 'link leads to', 'Login Page', '#link-to-login', 'login'
 
-  it_should_behave_like 'link leads to', 'Home Page', '#home-link', '/'
+  it_should_behave_like 'link leads to', 'Cart', '.cart-info', 'cart'
+
+  it_should_behave_like 'link leads to', 'Home Page', '#home-link', ''
 
   it 'has Taxonomies links' do
     taxonomies = all('.list-group-item').collect(&:text)

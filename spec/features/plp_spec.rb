@@ -4,7 +4,7 @@ describe 'plp' do
   context 'starting with plp' do
     before do
       admin_login
-      visit '/'
+      visit router.root_path
     end
 
     it 'displays all breadcrumbs' do
@@ -17,13 +17,11 @@ describe 'plp' do
 
         taxonomy_title = all('.taxonomy-root').collect { |taxonomy| taxonomy.text.split.last }
 
-        taxonomy_breadcrumb_present = false
-
         title_is_present = taxonomy_title.any? { |word| breadcrumbs.include? word }
 
         aggregate_failures do
-          expect(breadcrumbs).to include "Home"
-          expect(breadcrumbs).to include "Products"
+          expect(breadcrumbs).to include 'Home'
+          expect(breadcrumbs).to include 'Products'
           expect(title_is_present).to eq true
           expect(breadcrumbs).to include title
         end
@@ -46,7 +44,7 @@ describe 'plp' do
           within(taxons) { expect(page).to have_content taxonomy }
         end
 
-        visit '/'
+        visit router.root_path
       end
     end
 
@@ -89,17 +87,16 @@ describe 'plp' do
         end
       end
 
-      within('.navigation', text: 'Price Range') { @prices = all('input').collect(&:value) }
-
-      @prices.each do |price|
+      prices = find('.navigation', text: 'Price Range').all('input').collect(&:value)
+      prices.each do |price|
         if price.include?('under')
-          max_price = price.split(' ')[1].delete('$')
+          max_price = price.split[1].delete('$')
           sorted_hash = products_prices.select { |key, value| value <= max_price.to_f }
         elsif price.include?('over')
-          min_price = price.split(' ')[0].delete('$')
+          min_price = price.split[0].delete('$')
           sorted_hash = products_prices.select { |key, value| value >= min_price.to_f }
         else
-          range = price.gsub('$', '').delete('-').split(' ')
+          range = price.gsub('$', '').delete('-').split
           sorted_hash = products_prices.select { |key, value| value >= range[0].to_f && value <= range[1].to_f }
         end
 
@@ -107,7 +104,7 @@ describe 'plp' do
         find('.btn-primary').click
 
         aggregate_failures do
-          if !sorted_hash.empty?
+          if sorted_hash.any?
             sorted_products = all('span.info').collect(&:text)
 
             expect(sorted_hash.keys).to eq sorted_products
@@ -134,7 +131,7 @@ describe 'plp' do
       titles   = products.collect { |product| product.all('td')[3].text }
       prices   = products.collect { |product| product.all('td')[4].text }
 
-      visit '/'
+      visit router.root_path
 
       titles.each_with_index do |title, index|
         until page.has_css?('.panel-default', text: title)
@@ -150,14 +147,14 @@ describe 'plp' do
           expect(pdp_picture).to eq pictures[index]
         end
 
-        visit '/'
+        visit router.root_path
       end
     end
 
     it 'has all available products from Admin Panel' do
       quantity = all('tr[data-hook="admin_products_index_rows"]', text: 'Available').count
 
-      visit '/'
+      visit router.root_path
 
       all('.page').count.times do
         quantity_per_page = all('.product-body').count
@@ -173,7 +170,7 @@ describe 'plp' do
       products = all('tr[data-hook="admin_products_index_rows"]', text: 'Available')
       titles = products.collect { |product| product.all('td')[3].text }
 
-      visit '/'
+      visit router.root_path
 
       titles.each do |title|
         fill_in 'Search', with: title
@@ -182,9 +179,9 @@ describe 'plp' do
         products_titles = all('.product-body').collect(&:text)
 
         products_titles.each do |all_words|
-          tag = all_words.split(' ')
+          tag = all_words.split
 
-          title_keys = title.split(' ')
+          title_keys = title.split
           title_keys = tag.any? { |word| title_keys.include? word }
         end
 

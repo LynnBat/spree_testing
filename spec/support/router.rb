@@ -1,4 +1,8 @@
 class Router
+  def root_path
+    '/'
+  end
+
   def pdp_path
     '/products/ruby-on-rails-baseball-jersey'
   end
