@@ -96,8 +96,8 @@ describe 'plp' do
           min_price = price.split[0].delete('$')
           sorted_hash = products_prices.select { |key, value| value >= min_price.to_f }
         else
-          range = price.gsub('$', '').delete('-').split
-          sorted_hash = products_prices.select { |key, value| value >= range[0].to_f && value <= range[1].to_f }
+          range = price.gsub('$', '').delete('-').split.collect(&:to_f)
+          sorted_hash = products_prices.select { |key, value| Range.new(*range).include?(value) }
         end
 
         check price
