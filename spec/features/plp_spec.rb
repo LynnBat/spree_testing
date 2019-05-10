@@ -1,13 +1,15 @@
-describe 'plp' do
+# frozen_string_literal: true
+
+RSpec.feature 'plp' do
   let(:router) { Router.new }
 
-  context 'starting with plp' do
+  describe 'starting with plp' do
     before do
       admin_login
       visit router.root_path
     end
 
-    it 'displays all breadcrumbs' do
+    scenario 'displays all breadcrumbs' do
       taxonomies = all('.list-group-item').collect(&:text)
       taxonomies.each do |taxonomy|
         click_link taxonomy
@@ -28,7 +30,7 @@ describe 'plp' do
       end
     end
 
-    it 'can filter products by Categories' do
+    scenario 'can filter products by Categories' do
       taxonomies = all('.list-group-item').collect(&:text)
       taxonomies.each do |taxonomy|
         click_link taxonomy
@@ -48,7 +50,7 @@ describe 'plp' do
       end
     end
 
-    it 'can filter products by Subcategories' do
+    scenario 'can filter products by Subcategories' do
       visit router.plp_with_subcategories_path
 
       subcategories = all('.breadcrumbs')
@@ -68,7 +70,7 @@ describe 'plp' do
       end
     end
 
-    it 'can filter products by Price' do
+    scenario 'can filter products by Price' do
       visit router.rails_category_path
 
       products_prices = { }
@@ -118,13 +120,13 @@ describe 'plp' do
     end
   end
 
-  context 'starting with Admin Panel' do
+  describe 'starting with Admin Panel' do
     before do
       admin_login
       visit router.admin_products_path
     end
 
-    it 'has all products' do
+    scenario 'has all products' do
       products = all('tr[data-hook="admin_products_index_rows"]', text: 'Available')
 
       pictures = products.collect { |product| product.find('img')[:src].split('/').last }
@@ -151,7 +153,7 @@ describe 'plp' do
       end
     end
 
-    it 'has all available products from Admin Panel' do
+    scenario 'has all available products from Admin Panel' do
       quantity = all('tr[data-hook="admin_products_index_rows"]', text: 'Available').count
 
       visit router.root_path
@@ -166,7 +168,7 @@ describe 'plp' do
       expect(quantity).to eq 0
     end
 
-    it 'can search for a product' do
+    scenario 'can search for a product' do
       products = all('tr[data-hook="admin_products_index_rows"]', text: 'Available')
       titles = products.collect { |product| product.all('td')[3].text }
 

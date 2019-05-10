@@ -1,10 +1,12 @@
-describe 'pdp' do
+# frozen_string_literal: true
+
+RSpec.feature 'pdp' do
   let(:router) { Router.new }
 
-  context 'All elements are present' do
+  describe 'All elements are present' do
     before { admin_login }
 
-    it 'has same breadcrumbs as in Admin Panel' do
+    scenario 'has same breadcrumbs as in Admin Panel' do
       taxons = info_from_admin_panel('.select2-search-choice', 'Categories').split(' -> ')
 
       visit router.pdp_path
@@ -14,7 +16,7 @@ describe 'pdp' do
       expect(pdp_taxons).to eq taxons
     end
 
-    it 'has Product title' do
+    scenario 'has Product title' do
       title = info_from_admin_panel('#product_name')
 
       visit router.pdp_path
@@ -24,7 +26,7 @@ describe 'pdp' do
       expect(pdp_title).to eq title
     end
 
-    it 'has description' do
+    scenario 'has description' do
       description = info_from_admin_panel('#product_description')
 
       visit router.pdp_path
@@ -34,7 +36,7 @@ describe 'pdp' do
       expect(pdp_description).to eq description
     end
 
-    it 'has price' do
+    scenario 'has price' do
       price = info_from_admin_panel('#product_price')
 
       visit router.pdp_path
@@ -44,7 +46,7 @@ describe 'pdp' do
       expect(pdp_price).to include price
     end
 
-    it 'has pictures' do
+    scenario 'has pictures' do
       visit router.admin_item_pictures_path
       pictures = find('.table.sortable').all('img').collect { |img| img[:src].split('/').last }
 
@@ -63,7 +65,7 @@ describe 'pdp' do
       expect(pdp_pictures).to eq pictures
     end
 
-    it 'has variants' do
+    scenario 'has variants' do
       visit router.admin_item_variants_path
       variants = []
       table = find('.ui-sortable').all('tr')
@@ -80,7 +82,7 @@ describe 'pdp' do
       expect(pdp_variants).to eq variants
     end
 
-    it 'has properties' do
+    scenario 'has properties' do
       visit router.admin_item_properties_path
       properties = all('.form-control').collect(&:value).reject(&:empty?)
 
@@ -93,7 +95,7 @@ describe 'pdp' do
       expect(pdp_properties).to eq properties
     end
 
-    it 'has section titles and breadcrumbs' do
+    scenario 'has section titles and breadcrumbs' do
       visit router.pdp_path
 
       aggregate_failures do
@@ -105,10 +107,10 @@ describe 'pdp' do
     end
   end
 
-  context 'Functionality' do
+  describe 'Functionality' do
     before { visit router.pdp_path }
 
-    it 'breadcrumbs redirect to the right page' do
+    scenario 'breadcrumbs redirect to the right page' do
       breadcrumbs = find('.breadcrumb').all('a').collect(&:text)
       breadcrumbs.each do |breadcrumb|
         find('.breadcrumb').click_link breadcrumb
@@ -123,7 +125,7 @@ describe 'pdp' do
       end
     end
 
-    it 'while hovering the picture, main is changed' do
+    scenario 'while hovering the picture, main is changed' do
       variants = all('.variant-description').collect(&:text)
 
       variants.each do |variant|
@@ -142,7 +144,7 @@ describe 'pdp' do
       end
     end
 
-    it 'can choose any variant' do
+    scenario 'can choose any variant' do
       variants = all('.variant-description').collect(&:text)
 
       variants.each do |variant|
@@ -158,7 +160,7 @@ describe 'pdp' do
       end
     end
 
-    it 'can change the quantity' do
+    scenario 'can change the quantity' do
       fill_in 'quantity', with: 3
 
       click_button 'Add To Cart'
@@ -167,12 +169,12 @@ describe 'pdp' do
       expect(quantity_cart).to eq 3
     end
 
-    it 'can add to the card' do
+    scenario 'can add to the card' do
       click_button 'Add To Cart'
       expect(page.current_url).to include 'cart'
     end
 
-    it 'can be redirected to similar items' do
+    scenario 'can be redirected to similar items' do
       names = all('.list-group-item').collect(&:text)
       names.each do |item|
         within('#taxon-crumbs') { click_link item }
