@@ -1,6 +1,8 @@
-describe 'my_account_page' do
+# frozen_string_literal: true
+
+RSpec.feature 'my_account_page' do
   before do
-    @email = Faker::Internet.unique.email
+    @email = Faker::Internet.unique.safe_email
     @password = '1234567'
 
     create_user(@email, @password, @password)
@@ -10,7 +12,7 @@ describe 'my_account_page' do
 
   after { logout }
 
-  it 'displays information' do
+  scenario 'displays information' do
     aggregate_failures do
       expect(page).to have_css('dd', text: @email)
       store_credit = all('dd')[1].text
@@ -20,7 +22,7 @@ describe 'my_account_page' do
   end
 
   # I'll finish that part after writing tests for creating orders
-    xit 'displays orders if there are some' do
+    xscenario 'displays orders if there are some' do
       login(email, password)
 
       find('a', text: 'My Account').click
@@ -35,10 +37,10 @@ describe 'my_account_page' do
       end
     end
 
-  context 'editing information' do
+  describe 'editing information' do
     before { find('a', text: 'Edit').click }
 
-    it 'can change the email' do
+    scenario 'can change the email' do
       new_email = Faker::Internet.unique.email
       fill_inputs(new_email, @password, @password)
 
@@ -47,7 +49,7 @@ describe 'my_account_page' do
       expect(page).to have_css('.alert-notice', text: 'Account updated')
     end
 
-    it 'can change password' do
+    scenario 'can change password' do
       new_password = 'qwerty'
       fill_inputs(@email, new_password, new_password)
 
@@ -56,7 +58,7 @@ describe 'my_account_page' do
       expect(page).to have_css('.alert-notice', text: 'Account updated')
     end
 
-    it 'cant change password' do
+    scenario 'cant change password' do
       new_password = 'qwerty'
       fill_inputs(@email, new_password, @password)
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PLPHelper
   def get_product_price(item)
     product = item.find('.product-body').text

@@ -1,4 +1,6 @@
-describe 'shopping_cart' do
+# frozen_string_literal: true
+
+RSpec.feature 'shopping_cart' do
   let(:credentials) { Credentials.new }
   let(:address)     { Address.new }
   let(:address2)    { Address.new }
@@ -9,31 +11,31 @@ describe 'shopping_cart' do
     click_button 'Checkout'
   end
 
-  context 'New Account' do
+  describe 'New Account' do
     before { proceed_as_new_user(credentials) }
 
-    it_should_behave_like 'Address step'
+    it_behaves_like 'Address step'
 
-    it_should_behave_like 'Delivery step'
+    it_behaves_like 'Delivery step'
 
-    it_should_behave_like 'Payment step'
+    it_behaves_like 'Payment step'
 
-    it_should_behave_like 'Confirmation step'
+    it_behaves_like 'Confirmation step'
 
-    it_should_behave_like 'Can edit on Confirmation step'
+    it_behaves_like 'Can edit on Confirmation step'
   end
 
-  context 'Guest' do
+  describe 'Guest' do
     before { proceed_as_guest(credentials) }
 
-    it_should_behave_like 'Address step'
+    it_behaves_like 'Address step'
 
-    it_should_behave_like 'Delivery step'
+    it_behaves_like 'Delivery step'
 
-    it_should_behave_like 'Payment step'
+    it_behaves_like 'Payment step'
 
-    it_should_behave_like 'Confirmation step'
+    it_behaves_like 'Confirmation step'
 
-    it_should_behave_like 'Can edit on Confirmation step'
+    it_behaves_like 'Can edit on Confirmation step'
   end
 end

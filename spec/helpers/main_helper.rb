@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module MainHelper
   def fill_inputs(email, password, password_confirmation = nil)
     user_email_id = page.has_css?('#spree_user_email') ? 'spree_user_email' : 'user_email'

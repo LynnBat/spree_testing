@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module CheckoutHelper
   def add_to_cart(product)
     visit product

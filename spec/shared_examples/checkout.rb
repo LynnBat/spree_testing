@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 shared_examples 'Address step' do
-  it 'displays info on Address step' do
+  scenario 'displays info on Address step' do
     aggregate_failures do
       expect(page).to have_css('div[data-hook="checkout_header"]')
       expect(page).to have_css('.first', text: 'Address')
@@ -15,7 +17,7 @@ shared_examples 'Address step' do
     end
   end
 
-  it 'default country is USA' do
+  scenario 'default country is USA' do
     uncheck 'Use Billing Address'
 
     aggregate_failures do
@@ -24,14 +26,14 @@ shared_examples 'Address step' do
     end
   end
 
-  it 'can save Billing' do
+  scenario 'can save Billing' do
     fill_in_billing(address)
     click_button 'Save and Continue'
 
     expect(page).to have_css('.active', text: 'Delivery')
   end
 
-  it 'can save Shipping different from Billing' do
+  scenario 'can save Shipping different from Billing' do
     fill_in_billing(address)
     uncheck 'Use Billing Address'
 
@@ -45,7 +47,7 @@ end
 shared_examples 'Delivery step' do
   before { save_address(billing: address) }
 
-  it 'has shipping methods, line-items' do
+  scenario 'has shipping methods, line-items' do
     shipping_method_cost = all('.rate-cost')
     ups_ground = shipping_method_cost[0].text
     ups_two_day = shipping_method_cost[1].text
@@ -63,7 +65,7 @@ shared_examples 'Delivery step' do
     end
   end
 
-  it 'shipping methods can be changed' do
+  scenario 'shipping methods can be changed' do
     choose('UPS One Day (USD)')
     expect(page).to have_css('tr[data-hook="shipping_total"]', text: '$15.00')
 
@@ -74,7 +76,7 @@ shared_examples 'Delivery step' do
     expect(page).to have_css('tr[data-hook="shipping_total"]', text: '$10.00')
   end
 
-  it 'taxes are calculated correctly' do
+  scenario 'taxes are calculated correctly' do
     item_total = find('tr[data-hook="item_total"]').text.split[-1].gsub('$', '').to_f
     taxes_percent = find('.total').text.split[-2].chop.to_f
     taxes = find('.total').text.split[-1].gsub('$', '').to_f
@@ -83,7 +85,7 @@ shared_examples 'Delivery step' do
     expect(taxes).to eq calculation
   end
 
-  it 'shipping methods can be saved' do
+  scenario 'shipping methods can be saved' do
     delivery_method_costs = all('.rate-cost').collect(&:text)
     delivery_method_costs.each do |delivery_method_cost|
       within('.shipping-methods') { choose delivery_method_cost }
@@ -108,7 +110,7 @@ shared_examples 'Payment step' do
     save_delivery('UPS Two Day (USD)')
   end
 
-  it 'cant save credit card with invalid Month' do
+  scenario 'cant save credit card with invalid Month' do
     credit_card[:expiry_date] = '00/00'
 
     fill_in_cc(credit_card)
@@ -117,7 +119,7 @@ shared_examples 'Payment step' do
     expect(page).to have_css('.alert-danger')
   end
 
-  it 'cant save credit card with invalid CC number' do
+  scenario 'cant save credit card with invalid CC number' do
     credit_card[:number] = '0000000000000000'
 
     fill_in_cc(credit_card)
@@ -126,7 +128,7 @@ shared_examples 'Payment step' do
     expect(page).to have_css('.alert-danger')
   end
 
-  it 'cant save credit card with invalid verification number' do
+  scenario 'cant save credit card with invalid verification number' do
     credit_card[:cvv] = '0'
 
     fill_in_cc(credit_card)
@@ -135,7 +137,7 @@ shared_examples 'Payment step' do
     expect(page).to have_css('.alert-danger')
   end
 
-  it 'has correct info on Payment page' do
+  scenario 'has correct info on Payment page' do
     full_name = "#{address.first_name} #{address.last_name}"
     name_on_card = find('#name_on_card_1').value
 
@@ -146,14 +148,14 @@ shared_examples 'Payment step' do
     end
   end
 
-  it 'can save credit card' do
+  scenario 'can save credit card' do
     fill_in_cc(credit_card)
     click_button 'Save and Continue'
 
     expect(page).to have_css('.active', text: 'Confirm')
   end
 
-  it 'can pay via check' do
+  scenario 'can pay via check' do
     choose 'Check'
 
     click_button 'Save and Continue'
@@ -161,7 +163,7 @@ shared_examples 'Payment step' do
     expect(page).to have_css('.alert-notice', text: 'Your order has been processed successfully')
   end
 
-  it 'can add promocode' do
+  scenario 'can add promocode' do
     fill_in_cc(credit_card)
     fill_in 'order_coupon_code', with: 'segment'
 
@@ -178,7 +180,7 @@ shared_examples 'Confirmation step' do
     save_payment(credit_card)
   end
 
-  it 'info is visible' do
+  scenario 'info is visible' do
     aggregate_failures do
       expect(page).to have_css('div[data-hook="checkout_header"]')
       expect(page).to have_css('.col-sm-3', text: 'Checkout')
@@ -211,7 +213,7 @@ shared_examples 'Confirmation step' do
     end
   end
 
-  it 'can place the order' do
+  scenario 'can place the order' do
     click_button 'Place Order'
 
     aggregate_failures do
@@ -229,7 +231,7 @@ shared_examples 'Can edit on Confirmation step' do
   end
 
   context 'using Navigation' do
-    it 'Billing Address' do
+    scenario 'Billing Address' do
       find('.completed', text: 'Address').click
       expect(page).to have_css('.active', text: 'Address')
 
@@ -248,7 +250,7 @@ shared_examples 'Can edit on Confirmation step' do
       end
     end
 
-    it 'Shipping method' do
+    scenario 'Shipping method' do
       find('.completed', text: 'Delivery').click
       expect(page).to have_css('.active', text: 'Delivery')
 
@@ -258,7 +260,7 @@ shared_examples 'Can edit on Confirmation step' do
       expect(page).to have_css('.delivery', text: 'From default via UPS One Day (USD)')
     end
 
-    it 'Payment' do
+    scenario 'Payment' do
       find('.completed', text: 'Payment').click
       expect(page).to have_css('.active', text: 'Payment')
 
@@ -269,7 +271,7 @@ shared_examples 'Can edit on Confirmation step' do
   end
 
   context 'using button' do
-    it 'Billing Address' do
+    scenario 'Billing Address' do
       find('h4', text: 'Billing Address').click_link 'Edit'
       expect(page).to have_css('.active', text: 'Address')
 
@@ -287,7 +289,7 @@ shared_examples 'Can edit on Confirmation step' do
       end
     end
 
-    it 'Shipping Address' do
+    scenario 'Shipping Address' do
       find('h4', text: 'Shipping Address').click_link 'Edit'
       expect(page).to have_css('.active', text: 'Address')
 
@@ -315,7 +317,7 @@ shared_examples 'Can edit on Confirmation step' do
       end
     end
 
-    it 'Shipping method' do
+    scenario 'Shipping method' do
       find('h4', text: 'Shipments').click_link 'Edit'
       expect(page).to have_css('.active', text: 'Delivery')
 
@@ -325,7 +327,7 @@ shared_examples 'Can edit on Confirmation step' do
       expect(page).to have_css('.delivery', text: 'From default via UPS One Day (USD)')
     end
 
-    it 'Payment' do
+    scenario 'Payment' do
       find('h4', text: 'Payment Information').click_link 'Edit'
       expect(page).to have_css('.active', text: 'Payment')
 

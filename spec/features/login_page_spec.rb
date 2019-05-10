@@ -1,4 +1,6 @@
-describe 'login_page' do
+# frozen_string_literal: true
+
+RSpec.feature 'login_page' do
   let(:password) { '1234567' }
   before { visit '/login' }
 
@@ -90,10 +92,10 @@ describe 'login_page' do
     end
   end
 
-  context 'Account creation' do
+  describe 'Account creation' do
     before { find('a', text: 'Create a new account').click }
 
-    it 'can Create New Account' do
+    scenario 'can Create New Account' do
       fill_in 'spree_user_email', with: Faker::Internet.unique.email
       fill_in 'spree_user_password', with: password
       fill_in 'spree_user_password_confirmation', with: password
@@ -104,7 +106,7 @@ describe 'login_page' do
       expect(alert_text).to eq 'Welcome! You have signed up successfully.'
     end
 
-    it 'cant create New Account with existing email' do
+    scenario 'cant create New Account with existing email' do
       fill_in 'spree_user_email', with: ENV['USERNAME_SPREE']
       fill_in 'spree_user_password', with: ENV['PASSWORD_SPREE']
       fill_in 'spree_user_password_confirmation', with: ENV['PASSWORD_SPREE']
@@ -115,7 +117,7 @@ describe 'login_page' do
       expect(alert_text).to match 'Email has already been taken'
     end
 
-    it 'cant create New Account with not matching passwords' do
+    scenario 'cant create New Account with not matching passwords' do
       fill_in 'spree_user_email', with: Faker::Internet.unique.email
       fill_in 'spree_user_password', with: password
       fill_in 'spree_user_password_confirmation', with: ENV['PASSWORD_SPREE']

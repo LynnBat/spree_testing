@@ -1,17 +1,19 @@
-describe 'links' do
+# frozen_string_literal: true
+
+RSpec.feature 'links' do
   let(:router) { Router.new }
 
   before { visit router.root_path }
 
-  it_should_behave_like 'link leads to', 'Logo', '#logo a', ''
+  it_behaves_like 'link leads to', 'Logo', '#logo a', ''
 
-  it_should_behave_like 'link leads to', 'Login Page', '#link-to-login', 'login'
+  it_behaves_like 'link leads to', 'Login Page', '#link-to-login', 'login'
 
-  it_should_behave_like 'link leads to', 'Cart', '.cart-info', 'cart'
+  it_behaves_like 'link leads to', 'Cart', '.cart-info', 'cart'
 
-  it_should_behave_like 'link leads to', 'Home Page', '#home-link', ''
+  it_behaves_like 'link leads to', 'Home Page', '#home-link', ''
 
-  it 'has Taxonomies links' do
+  scenario 'has Taxonomies links' do
     taxonomies = all('.list-group-item').collect(&:text)
     taxonomies.each do |taxonomy|
       click_link taxonomy
