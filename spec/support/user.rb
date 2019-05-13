@@ -3,7 +3,7 @@ class User
 
   def initialize
     @email        = Faker::Internet.unique.safe_email
-    @password     = ENV['PASSWORD_SPREE']
+    @password     = Faker::Internet.password
 
     @name         = Faker::Name.name
     @first_name   = Faker::Name.first_name

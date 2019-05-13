@@ -3,6 +3,10 @@ class Router
     '/'
   end
 
+  def login_path
+    '/login'
+  end
+
   def pdp_path
     '/products/ruby-on-rails-baseball-jersey'
   end

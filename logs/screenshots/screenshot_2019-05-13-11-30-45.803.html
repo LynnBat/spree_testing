@@ -1,0 +1,233 @@
+<html lang="en"><!--<![endif]--><head data-hook="inside_head">
+    <meta charset="utf-8">
+<title>Categories - Bags - Spree Demo Site</title>
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1" name="viewport">
+<meta name="keywords">
+<meta name="description">
+<link href="https://example.com/t/bags" rel="canonical">
+<link rel="shortcut icon" type="image/x-icon" href="/assets/favicon-92e86d463e909754599d66730477622cd3dd0b9bff58c47c9c38bebceb8073e5.ico">
+<link rel="stylesheet" media="screen" href="/assets/spree/frontend/all-2b4c91f2743fede2a6fb4e5ee21a23dea5369fc96381ad1cfa948e670d7f8ce5.css">
+<meta name="csrf-param" content="authenticity_token">
+<meta name="csrf-token" content="cbbhmZ2MvC463wH740WBGbOKTWab1FMKH7ZVWfuzI4s6TAgZPgmPQXb+7Fg+lzs0Iz151EujYv9WWo3GYYUHug==">
+<script>
+  SpreePaths = {"mounted_at":"/","admin":"admin/"}
+</script>
+
+<script src="/assets/spree/frontend/all-583c1490894be31ea32d952372398955493f0e30d6b4638cbba9ded254291237.js"></script>
+<!--[if lt IE 9]>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.6/html5shiv.min.js"></script>
+<![endif]-->
+
+
+<script>
+  Spree.translations = {"coupon_code_applied":"The coupon code was successfully applied to your order."}
+</script>
+
+
+  </head>
+  <body class="two-col" id="default" data-hook="body">
+    <div id="spree-header">
+  <header id="header" data-hook="">
+    <div class="container">
+      <div class="row">
+        <figure id="logo" class="col-md-4 col-sm-3" data-hook="">
+          <a href="/"><img src="/assets/logo/spree_50-0ae687ccd486b63b01687b1df9e5394430f6fce3ab40c28250b179be4363ddc1.png"></a>
+        </figure>
+        <nav class="navbar col-md-8 col-sm-9" id="top-nav-bar">
+  <ul id="nav-bar" class="nav navbar-nav navbar-right" data-hook="">
+  <li id="link-to-login"><a href="/login">Login</a></li>
+<li id="search-bar" data-hook="">
+      <form class="navbar-form" action="/products" accept-charset="UTF-8" method="get"><input name="utf8" type="hidden" value="✓">
+  <div class="form-group">
+      <select name="taxon" id="taxon" aria-label="Taxon" class="form-control"><option value="">All departments</option>
+<option selected="selected" value="3">Bags</option>
+<option value="4">Mugs</option>
+<option value="5">Clothing</option></select>
+  </div>
+  <div class="form-group">
+    <input type="search" name="keywords" id="keywords" placeholder="Search" class="form-control">
+  </div>
+  <input type="submit" value="Search" class="btn btn-success" data-disable-with="Search">
+</form>
+    </li>
+  </ul>
+</nav>
+
+      </div>
+    </div>
+  </header>
+  <div class="container">
+    <nav class="col-md-12">
+  <div id="main-nav-bar" class="navbar">
+    <ul class="nav navbar-nav" data-hook="">
+      <li id="home-link" data-hook=""><a href="/">Home</a></li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right" data-hook="">
+      <li id="link-to-cart" data-hook=""><a class="cart-info empty" href="/cart"><span class="glyphicon glyphicon-shopping-cart"></span> Cart: (Empty)</a></li>
+      <script>Spree.fetch_cart()</script>
+    </ul>
+  </div>
+</nav>
+
+  </div>
+</div>
+
+
+    <div class="container">
+      <div class="row" data-hook="">
+        <nav id="breadcrumbs" class="col-md-12"><ol class="breadcrumb" itemscope="itemscope" itemtype="https://schema.org/BreadcrumbList"><li itemscope="itemscope" itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="item"><a itemprop="url" href="/"><span itemprop="name">Home</span></a>&nbsp;</span></li><li itemscope="itemscope" itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="item"><a itemprop="url" href="/products"><span itemprop="name">Products</span></a>&nbsp;</span></li><li itemscope="itemscope" itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="item"><a itemprop="url" href="/t/categories"><span itemprop="name">Categories</span></a>&nbsp;</span></li><li class="active" itemscope="itemscope" itemtype="https://schema.org/ListItem" itemprop="itemListElement"><span itemprop="item"><a itemprop="url" href="/t/bags"><span itemprop="name">Bags</span></a></span></li></ol></nav>
+
+        <aside id="sidebar" class="col-sm-4 col-md-3" data-hook="">
+    <div data-hook="taxon_sidebar_navigation">
+    
+<nav id="taxonomies" class="sidebar-item" data-hook="">
+        <h4 class="taxonomy-root">Shop by Categories</h4>
+        <div class="list-group"><a class="list-group-item active" href="/t/bags">Bags</a>
+<a class="list-group-item" href="/t/mugs">Mugs</a>
+<a class="list-group-item" href="/t/clothing">Clothing</a></div>
+        <h4 class="taxonomy-root">Shop by Brands</h4>
+        <div class="list-group"><a class="list-group-item" href="/t/ruby">Ruby</a>
+<a class="list-group-item" href="/t/apache">Apache</a>
+<a class="list-group-item" href="/t/spree">Spree</a>
+<a class="list-group-item" href="/t/rails">Rails</a></div>
+</nav>
+
+    
+  <form id="sidebar_products_search" action="" accept-charset="UTF-8" method="get"><input name="utf8" type="hidden" value="✓">
+    <input type="hidden" name="per_page" id="per_page">
+      <div class="navigation" data-hook="navigation">
+        <h4 class="filter-title"> Price Range </h4>
+        <ul class="list-group">
+            <li class="list-group-item">
+              <input type="checkbox" id="Price_Range_Under_$10.00" name="search[price_range_any][]" value="Under $10.00">
+              <label class="nowrap" for="Price_Range_Under_$10.00"> Under $10.00 </label>
+            </li>
+            <li class="list-group-item">
+              <input type="checkbox" id="Price_Range_$10.00_-_$15.00" name="search[price_range_any][]" value="$10.00 - $15.00">
+              <label class="nowrap" for="Price_Range_$10.00_-_$15.00"> $10.00 - $15.00 </label>
+            </li>
+            <li class="list-group-item">
+              <input type="checkbox" id="Price_Range_$15.00_-_$18.00" name="search[price_range_any][]" value="$15.00 - $18.00">
+              <label class="nowrap" for="Price_Range_$15.00_-_$18.00"> $15.00 - $18.00 </label>
+            </li>
+            <li class="list-group-item">
+              <input type="checkbox" id="Price_Range_$18.00_-_$20.00" name="search[price_range_any][]" value="$18.00 - $20.00">
+              <label class="nowrap" for="Price_Range_$18.00_-_$20.00"> $18.00 - $20.00 </label>
+            </li>
+            <li class="list-group-item">
+              <input type="checkbox" id="Price_Range_$20.00_or_over" name="search[price_range_any][]" value="$20.00 or over">
+              <label class="nowrap" for="Price_Range_$20.00_or_over"> $20.00 or over </label>
+            </li>
+        </ul>
+      </div>
+    <input type="submit" value="Search" class="btn btn-primary" data-disable-with="Search">
+</form>
+  </div>
+
+</aside>
+
+
+        <div id="content" class="col-sm-8 col-md-9" data-hook="">
+          
+          <h1 class="taxon-title">Bags</h1>
+
+
+<div data-hook="taxon_products">
+  
+<div data-hook="products_search_results_heading">
+</div>
+
+  <div id="products" class="row" data-hook="">
+    <div id="product_1" class="col-md-3 col-sm-6 col-xs-6 product-list-item" data-hook="products_list_item" itemscope="" itemtype="https://schema.org/Product">
+  <div class="panel panel-default">
+      <div class="panel-body text-center product-body">
+        <a itemprop="url" href="/products/ruby-on-rails-tote?taxon_id=3">
+          <img alt="Ruby on Rails Tote" itemprop="image" src="https://piotr-spree.herokuapp.com/rails/active_storage/representations/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBHZz09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--306ebe4ee5c29d9c499f3f4191142d81a6927c4a/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCam9MY21WemFYcGxTU0lOTVRBd2VERXdNRDRHT2daRlZBPT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--2bbef154a1ca415a54fe16eaafece43a1b4c761c/ror_tote.jpeg"><br>
+          <span class="info" itemprop="name" title="Ruby on Rails Tote">Ruby on Rails Tote</span>
+</a>        <br>
+      </div>
+      <div class="panel-footer text-center">
+        <span itemprop="offers" itemscope="" itemtype="https://schema.org/Offer">
+          <span class="price selling lead" itemprop="price" content="15.99">
+            $15.99
+          </span>
+          <span itemprop="priceCurrency" content="USD"></span>
+        </span>
+      </div>
+  </div>
+</div>
+<div id="product_2" class="col-md-3 col-sm-6 col-xs-6 product-list-item" data-hook="products_list_item" itemscope="" itemtype="https://schema.org/Product">
+  <div class="panel panel-default">
+      <div class="panel-body text-center product-body">
+        <a itemprop="url" href="/products/ruby-on-rails-bag?taxon_id=3">
+          <img alt="Ruby on Rails Bag" itemprop="image" src="https://piotr-spree.herokuapp.com/rails/active_storage/representations/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBIQT09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--fc11fa88ca740e2247a45364742e6a1b7337e3e8/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCam9MY21WemFYcGxTU0lOTVRBd2VERXdNRDRHT2daRlZBPT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--2bbef154a1ca415a54fe16eaafece43a1b4c761c/ror_bag.jpeg"><br>
+          <span class="info" itemprop="name" title="Ruby on Rails Bag">Ruby on Rails Bag</span>
+</a>        <br>
+      </div>
+      <div class="panel-footer text-center">
+        <span itemprop="offers" itemscope="" itemtype="https://schema.org/Offer">
+          <span class="price selling lead" itemprop="price" content="22.99">
+            $22.99
+          </span>
+          <span itemprop="priceCurrency" content="USD"></span>
+        </span>
+      </div>
+  </div>
+</div>
+<div id="product_11" class="col-md-3 col-sm-6 col-xs-6 product-list-item" data-hook="products_list_item" itemscope="" itemtype="https://schema.org/Product">
+  <div class="panel panel-default">
+      <div class="panel-body text-center product-body">
+        <a itemprop="url" href="/products/spree-tote?taxon_id=3">
+          <img alt="Spree Tote" itemprop="image" src="https://piotr-spree.herokuapp.com/rails/active_storage/representations/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBLUT09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--c1f73fea6cf019654b9bdca2c243b8a96c8b7ba5/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCam9MY21WemFYcGxTU0lOTVRBd2VERXdNRDRHT2daRlZBPT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--2bbef154a1ca415a54fe16eaafece43a1b4c761c/spree_tote_front.jpeg"><br>
+          <span class="info" itemprop="name" title="Spree Tote">Spree Tote</span>
+</a>        <br>
+      </div>
+      <div class="panel-footer text-center">
+        <span itemprop="offers" itemscope="" itemtype="https://schema.org/Offer">
+          <span class="price selling lead" itemprop="price" content="15.99">
+            $15.99
+          </span>
+          <span itemprop="priceCurrency" content="USD"></span>
+        </span>
+      </div>
+  </div>
+</div>
+<div id="product_12" class="col-md-3 col-sm-6 col-xs-6 product-list-item" data-hook="products_list_item" itemscope="" itemtype="https://schema.org/Product">
+  <div class="panel panel-default">
+      <div class="panel-body text-center product-body">
+        <a itemprop="url" href="/products/spree-bag?taxon_id=3">
+          <img alt="Spree Bag" itemprop="image" src="https://piotr-spree.herokuapp.com/rails/active_storage/representations/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBLQT09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--55a3f6740f481536acb67573b9fb99bf84e2af5f/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCam9MY21WemFYcGxTU0lOTVRBd2VERXdNRDRHT2daRlZBPT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--2bbef154a1ca415a54fe16eaafece43a1b4c761c/spree_bag.jpeg"><br>
+          <span class="info" itemprop="name" title="Spree Bag">Spree Bag</span>
+</a>        <br>
+      </div>
+      <div class="panel-footer text-center">
+        <span itemprop="offers" itemscope="" itemtype="https://schema.org/Offer">
+          <span class="price selling lead" itemprop="price" content="22.99">
+            $22.99
+          </span>
+          <span itemprop="priceCurrency" content="USD"></span>
+        </span>
+      </div>
+  </div>
+</div>
+
+  </div>
+
+  
+
+
+</div>
+
+  <div data-hook="taxon_children">
+      
+  </div>
+
+        </div>
+
+        
+      </div>
+    </div>
+  
+
+</body></html>

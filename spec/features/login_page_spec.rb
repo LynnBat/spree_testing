@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 RSpec.feature 'login_page' do
-  let(:password) { '1234567' }
-  before { visit '/login' }
+  let(:user)   { User.new }
+  let(:router) { Router.new }
 
-  it 'has Email, Password, Remember me inputs' do
+  before { visit router.login_path }
+
+  scenario 'has Email, Password, Remember me inputs' do
     aggregate_failures do
       expect(page).to have_css('input#spree_user_email')
       expect(page).to have_css('input#spree_user_password')
@@ -13,7 +15,7 @@ RSpec.feature 'login_page' do
     end
   end
 
-  xit 'restore password' do
+  xscenario 'restore password' do
     find('a', text: 'Forgot Password?').click
 
     expect(page).to have_css('p', text: 'Please enter your email on the form below')
@@ -26,53 +28,48 @@ RSpec.feature 'login_page' do
 
   describe 'Login process' do
     context 'Login successful' do
-      before do
-        fill_in 'spree_user_email', with: ENV['USERNAME_SPREE']
-        fill_in 'spree_user_password', with: ENV['PASSWORD_SPREE']
-      end
+      before { fill_inputs(ENV['USERNAME_SPREE'], ENV['PASSWORD_SPREE']) }
 
-      it 'can Log in as a User' do
+      scenario 'can Log in as a User' do
         click_button 'Login'
 
-        expect(page).to have_css('a', text: 'Logout')
         alert_text = find('.alert-success').text
-        expect(alert_text).to eq 'Logged in successfully'
+
+        aggregate_failures do
+          expect(page).to have_css('a', text: 'Logout')
+          expect(alert_text).to eq 'Logged in successfully'
+        end
       end
 
-      it 'remembers User' do
+      scenario 'remembers User' do
         check 'Remember me'
         click_button 'Login'
 
-        alert_text = find('.alert-success').text
-        expect(alert_text).to eq 'Logged in successfully'
-        expect(page).to have_css('a', text: 'Logout')
-
         expire_cookies
         refresh
 
-        expect(page).not_to have_css('.alert-success', wait: false)
-        expect(page).to have_css('a', text: 'Logout')
+        aggregate_failures do
+          expect(page).not_to have_css('.alert-success', wait: false)
+          expect(page).to have_css('a', text: 'Logout')
+        end
       end
 
-      it 'doesnt remeber User' do
+      scenario "doesn't remeber User" do
         click_button 'Login'
-
-        alert_text = find('.alert-success').text
-        expect(alert_text).to eq 'Logged in successfully'
-        expect(page).to have_css('a', text: 'Logout')
 
         expire_cookies
         refresh
 
-        expect(page).not_to have_css('.alert-success', wait: false)
-        expect(page).not_to have_css('a', text: 'Logout')
+        aggregate_failures do
+          expect(page).not_to have_css('.alert-success', wait: false)
+          expect(page).not_to have_css('a', text: 'Logout')
+        end
       end
     end
 
     context 'Login unsuccessful' do
-      it 'cannot Log in as a User with incorrect email' do
-        fill_in 'spree_user_email', with: '12345@qwe.co'
-        fill_in 'spree_user_password', with: password
+      scenario 'cannot Log in as a User with incorrect email' do
+        fill_inputs(user.email, user.password)
 
         click_button 'Login'
 
@@ -80,9 +77,8 @@ RSpec.feature 'login_page' do
         expect(alert_text).to eq 'Invalid email or password.'
       end
 
-      it 'cannot Log in as a User with incorrct password' do
-        fill_in 'spree_user_email', with: ENV['USERNAME_SPREE']
-        fill_in 'spree_user_password', with: password
+      scenario 'cannot Log in as a User with incorrect password' do
+        fill_inputs(ENV['USERNAME_SPREE'], user.password)
 
         click_button 'Login'
 
@@ -96,9 +92,7 @@ RSpec.feature 'login_page' do
     before { find('a', text: 'Create a new account').click }
 
     scenario 'can Create New Account' do
-      fill_in 'spree_user_email', with: Faker::Internet.unique.email
-      fill_in 'spree_user_password', with: password
-      fill_in 'spree_user_password_confirmation', with: password
+      fill_inputs(user.email, user.password, user.password)
 
       click_button 'Create'
 
@@ -106,10 +100,8 @@ RSpec.feature 'login_page' do
       expect(alert_text).to eq 'Welcome! You have signed up successfully.'
     end
 
-    scenario 'cant create New Account with existing email' do
-      fill_in 'spree_user_email', with: ENV['USERNAME_SPREE']
-      fill_in 'spree_user_password', with: ENV['PASSWORD_SPREE']
-      fill_in 'spree_user_password_confirmation', with: ENV['PASSWORD_SPREE']
+    scenario "can't create New Account with existing email" do
+      fill_inputs(ENV['USERNAME_SPREE'], user.password, user.password)
 
       click_button 'Create'
 
@@ -118,9 +110,7 @@ RSpec.feature 'login_page' do
     end
 
     scenario 'cant create New Account with not matching passwords' do
-      fill_in 'spree_user_email', with: Faker::Internet.unique.email
-      fill_in 'spree_user_password', with: password
-      fill_in 'spree_user_password_confirmation', with: ENV['PASSWORD_SPREE']
+      fill_inputs(user.email, user.password, ENV['PASSWORD_SPREE'])
 
       click_button 'Create'
 
