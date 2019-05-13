@@ -1,0 +1,8 @@
+APP_HOST='https://piotr-spree.herokuapp.com/'
+BROWSER='chrome'
+HEADLESS=0
+
+USERNAME_SPREE=''
+PASSWORD_SPREE=''
+ADMIN_SPREE=''
+ADMIN_PASSWORD_SPREE=''
