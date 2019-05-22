@@ -1,6 +1,17 @@
 # frozen_string_literal: true
 
 module MainHelper
+  def wait_for(options = {})
+    default_options = {
+      error: nil,
+      seconds: 7
+    }.merge(options)
+
+    Selenium::WebDriver::Wait.new(timeout: default_options[:seconds]).until { yield }
+  rescue Selenium::WebDriver::Error::TimeOutError
+    default_options[:error].nil? ? false : raise(default_options[:error])
+  end
+
   def fill_inputs(email, password, password_confirmation = nil)
     user_email_id = page.has_css?('#spree_user_email') ? 'spree_user_email' : 'user_email'
 
@@ -26,6 +37,12 @@ module MainHelper
   def create_user(email, password, password_confirmation)
     visit '/signup'
     fill_inputs(email, password, password_confirmation)
+    click_button 'Create'
+  end
+
+  def create_new_user(user)
+    visit '/signup'
+    fill_inputs(user.email, user.password, user.password)
     click_button 'Create'
   end
 

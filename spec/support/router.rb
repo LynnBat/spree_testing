@@ -11,12 +11,20 @@ class Router
     '/products/ruby-on-rails-baseball-jersey'
   end
 
+  def pdp2_path
+    '/products/ruby-on-rails-bag'
+  end
+
   def plp_with_subcategories_path
     '/t/clothing'
   end
 
   def rails_category_path
     '/t/rails'
+  end
+
+  def cart_path
+    '/cart'
   end
 
   def admin_item_path

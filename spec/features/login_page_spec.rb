@@ -15,6 +15,7 @@ RSpec.feature 'login_page' do
     end
   end
 
+  # skipped because it's the bug
   xscenario 'restore password' do
     find('a', text: 'Forgot Password?').click
 
@@ -23,7 +24,7 @@ RSpec.feature 'login_page' do
     fill_in 'spree_user_email', with: ENV['USERNAME_SPREE']
     click_button('Reset my password')
 
-    # this is a bug, i'll write expected line later
+    expect(page).to have_content 'Password reset email sent'
   end
 
   describe 'Login process' do
