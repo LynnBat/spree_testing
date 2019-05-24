@@ -6,39 +6,48 @@ RSpec.feature 'login_page' do
 
   before { visit router.login_path }
 
-  scenario 'has Email, Password, Remember me inputs' do
+  scenario 'has all blocks' do
     aggregate_failures do
+      expect(page).to have_css('.panel-heading', text: 'Login as Existing Customer')
       expect(page).to have_css('input#spree_user_email')
       expect(page).to have_css('input#spree_user_password')
-      expect(page).to have_css('input#spree_user_remember_me')
-      expect(page).to have_css('label', text: 'Remember me')
+      expect(page).to have_css('#spree_user_remember_me')
+      expect(page).to have_css('.btn-success[data-disable-with="Login"]')
+      expect(page).to have_css('a', text: 'Create a new account')
+      expect(page).to have_css('a', text: 'Forgot Password?')
+
+      find('a', text: 'Forgot Password?').click
+      expect(page).to have_css('p', text: 'Please enter your email on the form below')
     end
   end
 
-  # skipped because it's the bug
-  xscenario 'restore password' do
+  scenario "can't restore the password" do
     find('a', text: 'Forgot Password?').click
 
-    expect(page).to have_css('p', text: 'Please enter your email on the form below')
+    click_on 'Reset my password'
+    expect(page).to have_css('.alert-danger', text: "Email can't be blank")
+  end
+
+  # skipped because it's the bug
+  xscenario 'can restore the password' do
+    find('a', text: 'Forgot Password?').click
 
     fill_in 'spree_user_email', with: ENV['USERNAME_SPREE']
-    click_button('Reset my password')
+    click_on 'Reset my password'
 
     expect(page).to have_content 'Password reset email sent'
   end
 
-  describe 'Login process' do
-    context 'Login successful' do
+  describe 'Login' do
+    context 'Successful' do
       before { fill_inputs(ENV['USERNAME_SPREE'], ENV['PASSWORD_SPREE']) }
 
       scenario 'can Log in as a User' do
         click_button 'Login'
 
-        alert_text = find('.alert-success').text
-
         aggregate_failures do
           expect(page).to have_css('a', text: 'Logout')
-          expect(alert_text).to eq 'Logged in successfully'
+          expect(page).to have_css('.alert-success', text: 'Logged in successfully')
         end
       end
 
@@ -68,23 +77,19 @@ RSpec.feature 'login_page' do
       end
     end
 
-    context 'Login unsuccessful' do
-      scenario 'cannot Log in as a User with incorrect email' do
+    context 'Unsuccessful' do
+      scenario 'with incorrect email' do
         fill_inputs(user.email, user.password)
-
         click_button 'Login'
 
-        alert_text = find('.alert-error').text
-        expect(alert_text).to eq 'Invalid email or password.'
+        expect(page).to have_css('.alert-error', text: 'Invalid email or password.')
       end
 
-      scenario 'cannot Log in as a User with incorrect password' do
+      scenario 'with incorrect password' do
         fill_inputs(ENV['USERNAME_SPREE'], user.password)
-
         click_button 'Login'
 
-        alert_text = find('.alert-error').text
-        expect(alert_text).to eq 'Invalid email or password.'
+        expect(page).to have_css('.alert-error', text: 'Invalid email or password.')
       end
     end
   end
@@ -94,29 +99,23 @@ RSpec.feature 'login_page' do
 
     scenario 'can Create New Account' do
       fill_inputs(user.email, user.password, user.password)
-
       click_button 'Create'
 
-      alert_text = find('.alert-notice').text
-      expect(alert_text).to eq 'Welcome! You have signed up successfully.'
+      expect(page).to have_css('.alert-notice', text: 'Welcome! You have signed up successfully.')
     end
 
     scenario "can't create New Account with existing email" do
       fill_inputs(ENV['USERNAME_SPREE'], user.password, user.password)
-
       click_button 'Create'
 
-      alert_text = find('.alert-danger').text
-      expect(alert_text).to match 'Email has already been taken'
+      expect(page).to have_css('.alert-danger', text: 'Email has already been taken')
     end
 
     scenario 'cant create New Account with not matching passwords' do
       fill_inputs(user.email, user.password, ENV['PASSWORD_SPREE'])
-
       click_button 'Create'
 
-      alert_text = find('.alert-danger').text
-      expect(alert_text).to match "Password Confirmation doesn't match Password"
+      expect(page).to have_css('.alert-danger', text: "Password Confirmation doesn't match Password")
     end
   end
 end
