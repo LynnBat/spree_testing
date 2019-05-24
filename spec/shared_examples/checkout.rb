@@ -143,7 +143,7 @@ shared_examples 'Payment step' do
     expect(name_on_card).to eq full_name
   end
 
-  # skipped since it's bug
+  # skipped since it's bug: for now it's possible to save invalid card
   xscenario "can't save CC with invalid info" do
     fill_in 'card_number', with: '0000000000000000'
     fill_in 'card_expiry', with: '00/00'

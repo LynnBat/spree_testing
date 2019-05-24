@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.feature 'My Account' do
-  let(:user) { User.new }
+  let(:user)   { User.new }
+  let(:router) { Router.new }
 
   before do
     create_new_user(user)
@@ -21,18 +22,24 @@ RSpec.feature 'My Account' do
     end
   end
 
-  xscenario 'displays orders if there are some' do
-    binding.pry
-    add_to_cart('/products/ruby-on-rails-bag')
+  scenario 'displays orders' do
+    add_to_cart(router.pdp_path)
     click_on 'Checkout'
+
+    save_address(billing: user)
+    save_delivery
+    save_payment(credit_card)
+    click_on 'Place Order'
+    order_number = find('h1', text: 'Order').text.split.last
+    order_total  = find('#order_total').text
 
     find('a', text: 'My Account').click
 
     aggregate_failures do
-      expect(page).to have_css('.order-number')
+      expect(page).to have_css('.order-number', text: order_number)
       expect(page).to have_css('.order-date')
       expect(page).to have_css('.order-status')
-      expect(page).to have_css('.order-total')
+      expect(page).to have_css('.order-total', text: order_total)
       expect(page).to have_css('.order-payment-state')
       expect(page).to have_css('.order-shipment-state')
     end

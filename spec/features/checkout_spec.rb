@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.feature 'shopping_cart' do
+RSpec.feature 'Checkout' do
   let(:user)   { User.new }
   let(:user2)  { User.new }
   let(:router) { Router.new }

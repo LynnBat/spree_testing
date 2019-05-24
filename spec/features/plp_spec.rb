@@ -8,10 +8,10 @@ RSpec.feature 'Product Listed Page' do
 
     taxonomies = all('.list-group-item').map(&:text)
     taxonomies.each do |taxonomy|
-      click_link taxonomy
+      click_on taxonomy
       title = find('.taxon-title').text
 
-      breadcrumbs = find('.breadcrumb').all('a').map(&:text)
+      breadcrumbs = all('.breadcrumb a').map(&:text)
       taxonomy_title = all('.taxonomy-root').map { |taxonomy| taxonomy.text.split.last }
       title_is_present = taxonomy_title.any? { |word| breadcrumbs.include? word }
 
@@ -40,7 +40,7 @@ RSpec.feature 'Product Listed Page' do
         all('.panel-default').each do |item|
           products_prices.update get_product_price(item)
 
-          click_link 'Next' if page.has_css?('.next_page')
+          click_on 'Next' if page.has_css?('.next_page')
         end
       end
     else
@@ -53,13 +53,13 @@ RSpec.feature 'Product Listed Page' do
     prices.each do |price|
       if price.include?('under')
         max_price = price.split[1].delete('$')
-        sorted_hash = products_prices.select { |_key, value| value <= max_price.to_f }
+        sorted_hash = products_prices.select { |_, value| value <= max_price.to_f }
       elsif price.include?('over')
         min_price = price.split[0].delete('$')
-        sorted_hash = products_prices.select { |_key, value| value >= min_price.to_f }
+        sorted_hash = products_prices.select { |_, value| value >= min_price.to_f }
       else
         range = price.delete('$').delete('-').split.map(&:to_f)
-        sorted_hash = products_prices.select { |_key, value| Range.new(*range).include?(value) }
+        sorted_hash = products_prices.select { |_, value| Range.new(*range).include?(value) }
       end
 
       check price
@@ -98,7 +98,7 @@ RSpec.feature 'Product Listed Page' do
         until page.has_css?('.panel-default', text: title)
           raise "The product #{title} is not found" unless page.has_css?('a', text: 'Next')
 
-          click_link 'Next'
+          click_on 'Next'
         end
 
         pdp_product = find('.panel-default', text: title)
@@ -121,7 +121,7 @@ RSpec.feature 'Product Listed Page' do
 
       titles.each do |title|
         fill_in 'Search', with: title
-        click_button 'Search'
+        click_on 'Search'
 
         products_titles = all('.product-body').map(&:text)
 

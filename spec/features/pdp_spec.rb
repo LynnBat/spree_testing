@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.feature 'pdp' do
+RSpec.feature 'Product Detailed Page' do
   let(:number) { rand(2...10) }
   let(:router) { Router.new }
 
@@ -80,7 +80,7 @@ RSpec.feature 'pdp' do
 
     scenario 'Pictures' do
       visit router.admin_item_pictures_path
-      pictures = find('.table.sortable').all('img').map { |img| img[:src].split('/').last }
+      pictures = all('.table.sortable img').map { |img| img[:src].split('/').last }
 
       visit router.pdp_path
 
@@ -117,7 +117,7 @@ RSpec.feature 'pdp' do
 
       visit router.pdp_path
 
-      pdp_properties = find('#product-properties').all('td').map(&:text)
+      pdp_properties = all('#product-properties td').map(&:text)
 
       expect(pdp_properties).to eq properties
     end
@@ -127,15 +127,18 @@ RSpec.feature 'pdp' do
     before { visit router.pdp_path }
 
     scenario 'breadcrumbs redirect to the right page' do
-      breadcrumbs = find('.breadcrumb').all('a').map(&:text)
+      breadcrumbs = all('.breadcrumb a').map(&:text)
       breadcrumbs.each do |breadcrumb|
         find('.breadcrumb').click_on breadcrumb
 
         aggregate_failures do
-          if breadcrumb == 'Home'
-            expect(page.current_url).to eq "#{Capybara.app_host}/"
+          case breadcrumb
+          when 'Home'
+            expect(page).to have_current_path "#{Capybara.app_host}/"
+          when 'Products'
+            expect(page).to have_current_path "#{Capybara.app_host}/#{breadcrumb.downcase}"
           else
-            expect(page.current_url).to include breadcrumb.downcase
+            expect(page).to have_current_path "#{Capybara.app_host}/t/#{breadcrumb.downcase}"
           end
         end
 

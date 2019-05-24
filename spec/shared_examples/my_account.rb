@@ -2,7 +2,7 @@
 
 shared_examples 'Changing' do |name|
   let(:new_email)    { Faker::Internet.unique.safe_email }
-  let(:new_password) {'qwerty'}
+  let(:new_password) { 'qwerty' }
 
   before { find('a', text: 'Edit').click }
 

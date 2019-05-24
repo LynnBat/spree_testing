@@ -1,4 +1,4 @@
-APP_HOST='https://piotr-spree.herokuapp.com/'
+APP_HOST='https://lynn-spree.herokuapp.com/'
 BROWSER='chrome'
 HEADLESS=0
 

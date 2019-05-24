@@ -2,14 +2,14 @@
 
 module PDPHelper
   def find_picture_names(range)
-    find('.thumbnails.list-inline').all('img')[range].collect { |img| img[:src].split('/').last }
+    all('.thumbnails.list-inline img')[range].map { |img| img[:src].split('/').last }
   end
 
   def info_from_admin_panel(selector, text = nil)
-    visit router.admin_item_path
+    visit Router.new.admin_item_path
     value = find(selector, text: text).text
 
-    value = find(selector, text: text).value if value == ''
+    value = find(selector, text: text).value if value.empty?
 
     Capybara.reset_sessions!
 

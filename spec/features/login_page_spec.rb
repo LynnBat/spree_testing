@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.feature 'login_page' do
+RSpec.feature 'Login Page' do
   let(:user)   { User.new }
   let(:router) { Router.new }
 
@@ -21,14 +21,11 @@ RSpec.feature 'login_page' do
     end
   end
 
-  scenario "can't restore the password" do
-    find('a', text: 'Forgot Password?').click
+  it_behaves_like "can't restore the password", "Email can't be blank"
 
-    click_on 'Reset my password'
-    expect(page).to have_css('.alert-danger', text: "Email can't be blank")
-  end
+  it_behaves_like "can't restore the password", 'Email not found'
 
-  # skipped because it's the bug
+  # skipped because it's the bug: after clicking the button you get 404 error
   xscenario 'can restore the password' do
     find('a', text: 'Forgot Password?').click
 
@@ -99,21 +96,21 @@ RSpec.feature 'login_page' do
 
     scenario 'can Create New Account' do
       fill_inputs(user.email, user.password, user.password)
-      click_button 'Create'
+      click_on 'Create'
 
       expect(page).to have_css('.alert-notice', text: 'Welcome! You have signed up successfully.')
     end
 
     scenario "can't create New Account with existing email" do
       fill_inputs(ENV['USERNAME_SPREE'], user.password, user.password)
-      click_button 'Create'
+      click_on 'Create'
 
       expect(page).to have_css('.alert-danger', text: 'Email has already been taken')
     end
 
     scenario 'cant create New Account with not matching passwords' do
       fill_inputs(user.email, user.password, ENV['PASSWORD_SPREE'])
-      click_button 'Create'
+      click_on 'Create'
 
       expect(page).to have_css('.alert-danger', text: "Password Confirmation doesn't match Password")
     end

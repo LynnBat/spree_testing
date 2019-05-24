@@ -7,6 +7,14 @@ class Router
     '/login'
   end
 
+  def signup_path
+    '/signup'
+  end
+
+  def logout_path
+    '/logout'
+  end
+
   def pdp_path
     '/products/ruby-on-rails-baseball-jersey'
   end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.feature 'shopping_cart' do
+RSpec.feature 'Shopping Cart' do
   let(:number) { rand(2...10) }
   let(:router) { Router.new }
 
@@ -41,7 +41,7 @@ RSpec.feature 'shopping_cart' do
 
     scenario 'can delete the item by setting the quantity to 0' do
       fill_in 'order_line_items_attributes_0_quantity', with: 0
-      click_button 'update-button'
+      click_on 'update-button'
 
       expect(page).to have_css('.alert-info', text: 'Your cart is empty')
     end
@@ -51,11 +51,11 @@ RSpec.feature 'shopping_cart' do
 
       expect(page).to have_css('.alert-info', text: 'Your cart is empty')
     end
-  
+
     context 'Calculations' do
       before do
         fill_in 'order_line_items_attributes_0_quantity', with: number
-        click_button 'update-button'
+        click_on 'update-button'
       end
 
       scenario 'header displays number of items in the cart' do
@@ -65,16 +65,16 @@ RSpec.feature 'shopping_cart' do
       end
 
       scenario 'header displays the total sum' do
-        header_total = find('.amount').text.split('$')[1]
+        header_total = find('.amount').text.delete('$')
         total = find('.cart-total').text.split('$')[1]
 
         expect(total).to eq header_total
       end
 
       scenario 'total per item' do
-        one_item_price = find('.cart-item-price').text.split('$')[1].to_f
+        one_item_price = find('.cart-item-price').text.delete('$').to_f
         total_calculation = one_item_price * number
-        total_cart = find('.cart-item-total').text.split('$')[1].to_f
+        total_cart = find('.cart-item-total').text.delete('$').to_f
 
         expect(total_cart).to eq total_calculation.round(2)
       end
@@ -82,16 +82,16 @@ RSpec.feature 'shopping_cart' do
       scenario 'total for the whole order' do
         add_to_cart(router.pdp2_path)
 
-        first_total  = first('.cart-item-total').text.split('$')[1].to_f
-        second_total = all('.cart-item-total').last.text.split('$')[1].to_f
+        first_total  = first('.cart-item-total').text.delete('$').to_f
+        second_total = all('.cart-item-total').last.text.delete('$').to_f
         total_for_order = find('.cart-total').text.split('$')[1].to_f
 
         expect(total_for_order).to eq(first_total + second_total)
       end
 
-      scenario "50% off promocode" do
+      scenario '50% off promocode' do
         fill_in 'order_coupon_code', with: 'segment'
-        click_button 'Apply'
+        click_on 'Apply'
 
         subtotal = find('.cart-subtotal').text.split('$')[1].to_f
         promotion = (subtotal / 2).round(2)
