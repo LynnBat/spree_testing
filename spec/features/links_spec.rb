@@ -5,13 +5,13 @@ RSpec.feature 'links' do
 
   before { visit router.root_path }
 
-  it_behaves_like 'link redirects to', 'Logo', '#logo a', ''
+  it_behaves_like 'link redirects to', 'Logo'
 
-  it_behaves_like 'link redirects to', 'Login Page', '#link-to-login', 'login'
+  it_behaves_like 'link redirects to', 'Login Page'
 
-  it_behaves_like 'link redirects to', 'Cart', '.cart-info', 'cart'
+  it_behaves_like 'link redirects to', 'Cart'
 
-  it_behaves_like 'link redirects to', 'Home Page', '#home-link', ''
+  it_behaves_like 'link redirects to', 'Home Page'
 
   scenario 'has Taxonomies links' do
     taxonomies = all('.list-group-item').map(&:text)
