@@ -9,6 +9,8 @@ module PDPHelper
     visit router.admin_item_path
     value = find(selector, text: text).text
 
+    value = find(selector, text: text).value if value == ''
+
     Capybara.reset_sessions!
 
     value

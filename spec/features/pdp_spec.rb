@@ -1,22 +1,54 @@
 # frozen_string_literal: true
 
 RSpec.feature 'pdp' do
+  let(:number) { rand(2...10) }
   let(:router) { Router.new }
+
+  scenario 'has all blocks' do
+    visit router.pdp_path
+
+    aggregate_failures do
+      expect(page).to have_css('.breadcrumb')
+      expect(page).to have_css('#product-images')
+      expect(page).to have_css('#main-image')
+      expect(page).to have_css('#thumbnails')
+
+      expect(page).to have_css('.product-section-title', text: 'Properties')
+      expect(page).to have_content 'Manufacturer'
+      expect(page).to have_content 'Brand'
+      expect(page).to have_content 'Model'
+      expect(page).to have_content 'Shirt Type'
+      expect(page).to have_content 'Sleeve Type'
+      expect(page).to have_content 'Made from'
+      expect(page).to have_content 'Fit'
+      expect(page).to have_content 'Gender'
+
+      expect(page).to have_css('.product-title')
+      expect(page).to have_css('.well[data-hook="description"]')
+
+      expect(page).to have_css('.product-section-title', text: 'Variants')
+      expect(page).to have_css('.product-section-title', text: 'Price')
+      expect(page).to have_css('#quantity')
+      expect(page).to have_css('#add-to-cart-button')
+      expect(page).to have_css('.product-section-title', text: 'Look for similar items')
+      expect(page).to have_css('#similar_items_by_taxon')
+    end
+  end
 
   describe 'All elements are present' do
     before { admin_login }
 
-    scenario 'has same breadcrumbs as in Admin Panel' do
+    scenario 'Breadcrumbs' do
       taxons = info_from_admin_panel('.select2-search-choice', 'Categories').split(' -> ')
 
       visit router.pdp_path
 
-      pdp_taxons = find('.breadcrumb').all('a').collect(&:text)[2..-1]
+      pdp_taxons = find('.breadcrumb').all('a').map(&:text)[2..-1]
 
       expect(pdp_taxons).to eq taxons
     end
 
-    scenario 'has Product title' do
+    scenario 'Product Title' do
       title = info_from_admin_panel('#product_name')
 
       visit router.pdp_path
@@ -26,7 +58,7 @@ RSpec.feature 'pdp' do
       expect(pdp_title).to eq title
     end
 
-    scenario 'has description' do
+    scenario 'Description' do
       description = info_from_admin_panel('#product_description')
 
       visit router.pdp_path
@@ -36,7 +68,7 @@ RSpec.feature 'pdp' do
       expect(pdp_description).to eq description
     end
 
-    scenario 'has price' do
+    scenario 'Price' do
       price = info_from_admin_panel('#product_price')
 
       visit router.pdp_path
@@ -46,16 +78,14 @@ RSpec.feature 'pdp' do
       expect(pdp_price).to include price
     end
 
-    scenario 'has pictures' do
+    scenario 'Pictures' do
       visit router.admin_item_pictures_path
-      pictures = find('.table.sortable').all('img').collect { |img| img[:src].split('/').last }
-
-      Capybara.reset_session!
+      pictures = find('.table.sortable').all('img').map { |img| img[:src].split('/').last }
 
       visit router.pdp_path
 
       pdp_pictures = find_picture_names(0..1)
-      variants = all('.variant-description').collect(&:text)
+      variants = all('.variant-description').map(&:text)
 
       variants.each do |variant|
         choose variant
@@ -65,45 +95,31 @@ RSpec.feature 'pdp' do
       expect(pdp_pictures).to eq pictures
     end
 
-    scenario 'has variants' do
+    scenario 'Variants' do
       visit router.admin_item_variants_path
+
       variants = []
       table = find('.ui-sortable').all('tr')
       table.each do |variant|
         within(variant) { variants << all('td')[1].text }
       end
 
-      Capybara.reset_session!
-
       visit router.pdp_path
 
-      pdp_variants = all('.variant-description').collect(&:text)
+      pdp_variants = all('.variant-description').map(&:text)
 
       expect(pdp_variants).to eq variants
     end
 
-    scenario 'has properties' do
+    scenario 'Properties' do
       visit router.admin_item_properties_path
-      properties = all('.form-control').collect(&:value).reject(&:empty?)
-
-      Capybara.reset_session!
+      properties = all('.form-control').map(&:value).reject(&:empty?)
 
       visit router.pdp_path
 
-      pdp_properties = find('#product-properties').all('td').collect(&:text)
+      pdp_properties = find('#product-properties').all('td').map(&:text)
 
       expect(pdp_properties).to eq properties
-    end
-
-    scenario 'has section titles and breadcrumbs' do
-      visit router.pdp_path
-
-      aggregate_failures do
-        expect(page).to have_css('.breadcrumb')
-        expect(page).to have_css('.product-section-title', text: 'Properties')
-        expect(page).to have_css('.product-section-title', text: 'Variants')
-        expect(page).to have_css('.product-section-title', text: 'Look for similar items')
-      end
     end
   end
 
@@ -111,14 +127,16 @@ RSpec.feature 'pdp' do
     before { visit router.pdp_path }
 
     scenario 'breadcrumbs redirect to the right page' do
-      breadcrumbs = find('.breadcrumb').all('a').collect(&:text)
+      breadcrumbs = find('.breadcrumb').all('a').map(&:text)
       breadcrumbs.each do |breadcrumb|
-        find('.breadcrumb').click_link breadcrumb
+        find('.breadcrumb').click_on breadcrumb
 
-        if breadcrumb == 'Home'
-          expect(page.current_url).to eq "#{Capybara.app_host}/"
-        else
-          expect(page.current_url).to include breadcrumb.downcase
+        aggregate_failures do
+          if breadcrumb == 'Home'
+            expect(page.current_url).to eq "#{Capybara.app_host}/"
+          else
+            expect(page.current_url).to include breadcrumb.downcase
+          end
         end
 
         go_back
@@ -126,7 +144,7 @@ RSpec.feature 'pdp' do
     end
 
     scenario 'while hovering the picture, main is changed' do
-      variants = all('.variant-description').collect(&:text)
+      variants = all('.variant-description').map(&:text)
 
       variants.each do |variant|
         choose variant
@@ -145,41 +163,47 @@ RSpec.feature 'pdp' do
     end
 
     scenario 'can choose any variant' do
-      variants = all('.variant-description').collect(&:text)
+      variants = all('.variant-description').map(&:text)
 
-      variants.each do |variant|
-        choose variant
-        click_button 'Add To Cart'
+      aggregate_failures do
+        variants.each do |variant|
+          choose variant
+          click_on 'Add To Cart'
 
-        details = find('.cart-item-description').text
-        expect(details).to include variant
+          details = find('.cart-item-description').text
+          expect(details).to include variant
 
-        find('.delete').click
+          find('.delete').click
 
-        visit router.pdp_path
+          visit router.pdp_path
+        end
       end
     end
 
     scenario 'can change the quantity' do
-      fill_in 'quantity', with: 3
+      fill_in 'quantity', with: number
 
-      click_button 'Add To Cart'
+      click_on 'Add To Cart'
 
       quantity_cart = find('.line_item_quantity').value.to_i
-      expect(quantity_cart).to eq 3
+      expect(quantity_cart).to eq number
     end
 
     scenario 'can add to the card' do
-      click_button 'Add To Cart'
+      click_on 'Add To Cart'
+
       expect(page.current_url).to include 'cart'
     end
 
     scenario 'can be redirected to similar items' do
-      names = all('.list-group-item').collect(&:text)
-      names.each do |item|
-        within('#taxon-crumbs') { click_link item }
-        expect(page.current_url).to include item.downcase
-        go_back
+      names = all('.list-group-item').map(&:text)
+
+      aggregate_failures do
+        names.each do |item|
+          within('#taxon-crumbs') { click_on item }
+          expect(page.current_url).to include item.downcase
+          go_back
+        end
       end
     end
   end
