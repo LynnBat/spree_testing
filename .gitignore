@@ -3,3 +3,4 @@
 *.swp
 .env
 spec/logs/
+spec/logs/screenshots

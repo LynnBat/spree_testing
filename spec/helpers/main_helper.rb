@@ -34,12 +34,6 @@ module MainHelper
     visit '/logout' if page.has_css?('a', text: 'Logout')
   end
 
-  def create_user(email, password, password_confirmation)
-    visit '/signup'
-    fill_inputs(email, password, password_confirmation)
-    click_button 'Create'
-  end
-
   def create_new_user(user)
     visit '/signup'
     fill_inputs(user.email, user.password, user.password)
@@ -48,17 +42,17 @@ module MainHelper
 
   def credit_card
     {
-      number:      '4111111111111111',
+      number: '4111111111111111',
       expiry_date: '05/25',
-      cvv:         '2946'
+      cvv: '2946'
     }
   end
 
   def credit_card2
     {
-      number:      '4222222222222222',
+      number: '4222222222222222',
       expiry_date: '07/30',
-      cvv:         '2946'
+      cvv: '2946'
     }
   end
 end

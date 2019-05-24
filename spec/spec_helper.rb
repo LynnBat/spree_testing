@@ -8,6 +8,7 @@ require 'capybara/rspec'
 require 'capybara-screenshot/rspec'
 require 'selenium/webdriver'
 require 'show_me_the_cookies'
+require 'madison'
 
 Dir['./spec/helpers/**/*.rb'].each { |file| require file }
 Dir['./spec/shared_examples/**/*.rb'].each { |file| require file }
