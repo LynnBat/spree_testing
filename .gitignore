@@ -1,3 +1,6 @@
 .DS_Store
 .byebug_history
 *.swp
+.env
+spec/logs/
+spec/logs/screenshots

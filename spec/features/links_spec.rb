@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.feature 'links' do
+RSpec.feature 'Links' do
   let(:router) { Router.new }
 
   before { visit router.root_path }
@@ -14,13 +14,13 @@ RSpec.feature 'links' do
   it_behaves_like 'link leads to', 'Home Page', '#home-link', ''
 
   scenario 'has Taxonomies links' do
-    taxonomies = all('.list-group-item').collect(&:text)
+    taxonomies = all('.list-group-item').map(&:text)
     taxonomies.each do |taxonomy|
       click_link taxonomy
       title = find('.taxon-title').text
 
       aggregate_failures do
-        expect(page.current_url).to include taxonomy.downcase
+        expect(page).to have_current_path "/t/#{taxonomy.downcase}"
         expect(title).to eq taxonomy
       end
     end

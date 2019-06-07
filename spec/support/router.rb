@@ -3,8 +3,24 @@ class Router
     '/'
   end
 
+  def login_path
+    '/login'
+  end
+
+  def signup_path
+    '/signup'
+  end
+
+  def logout_path
+    '/logout'
+  end
+
   def pdp_path
     '/products/ruby-on-rails-baseball-jersey'
+  end
+
+  def pdp2_path
+    '/products/ruby-on-rails-bag'
   end
 
   def plp_with_subcategories_path
@@ -13,6 +29,10 @@ class Router
 
   def rails_category_path
     '/t/rails'
+  end
+
+  def cart_path
+    '/cart'
   end
 
   def admin_item_path

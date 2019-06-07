@@ -1,71 +1,51 @@
 # frozen_string_literal: true
 
-RSpec.feature 'my_account_page' do
-  before do
-    @email = Faker::Internet.unique.safe_email
-    @password = '1234567'
+RSpec.feature 'My Account' do
+  let(:user)   { User.new }
+  let(:router) { Router.new }
 
-    create_user(@email, @password, @password)
+  before do
+    create_new_user(user)
 
     find('a', text: 'My Account').click
   end
 
-  after { logout }
-
   scenario 'displays information' do
     aggregate_failures do
-      expect(page).to have_css('dd', text: @email)
-      store_credit = all('dd')[1].text
-      expect(store_credit).to match(/\$\d+\.\d{2}/)
+      expect(page).to have_content 'My Account'
+      expect(page).to have_css('#user-info')
+      expect(page).to have_css('dd', text: user.email)
+      store_credit = find('#user-info').text.split("\n").last
+      expect(store_credit).to eq '$0.00'
+      expect(page).to have_content 'My Orders'
       expect(page).to have_css('.alert-info', text: 'You have no orders yet')
     end
   end
 
-  # I'll finish that part after writing tests for creating orders
-    xscenario 'displays orders if there are some' do
-      login(email, password)
+  scenario 'displays orders' do
+    add_to_cart(router.pdp_path)
+    click_on 'Checkout'
 
-      find('a', text: 'My Account').click
+    save_address(billing: user)
+    save_delivery
+    save_payment(credit_card)
+    click_on 'Place Order'
+    order_number = find('h1', text: 'Order').text.split.last
+    order_total  = find('#order_total').text
 
-      aggregate_failures do
-        expect(page).to have_css('.order-number')
-        expect(page).to have_css('.order-date')
-        expect(page).to have_css('.order-status')
-        expect(page).to have_css('.order-total')
-        expect(page).to have_css('.order-payment-state')
-        expect(page).to have_css('.order-shipment-state')
-      end
-    end
+    find('a', text: 'My Account').click
 
-  describe 'editing information' do
-    before { find('a', text: 'Edit').click }
-
-    scenario 'can change the email' do
-      new_email = Faker::Internet.unique.email
-      fill_inputs(new_email, @password, @password)
-
-      click_button 'Update'
-
-      expect(page).to have_css('.alert-notice', text: 'Account updated')
-    end
-
-    scenario 'can change password' do
-      new_password = 'qwerty'
-      fill_inputs(@email, new_password, new_password)
-
-      click_button 'Update'
-
-      expect(page).to have_css('.alert-notice', text: 'Account updated')
-    end
-
-    scenario 'cant change password' do
-      new_password = 'qwerty'
-      fill_inputs(@email, new_password, @password)
-
-      find_button('Update').click
-
-      alert_text = find('.alert-danger').text
-      expect(alert_text).to match "Password Confirmation doesn't match Password"
+    aggregate_failures do
+      expect(page).to have_css('.order-number', text: order_number)
+      expect(page).to have_css('.order-date')
+      expect(page).to have_css('.order-status')
+      expect(page).to have_css('.order-total', text: order_total)
+      expect(page).to have_css('.order-payment-state')
+      expect(page).to have_css('.order-shipment-state')
     end
   end
+
+  it_behaves_like 'Changing', 'email'
+
+  it_behaves_like 'Changing', 'password'
 end

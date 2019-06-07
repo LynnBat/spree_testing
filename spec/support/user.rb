@@ -1,9 +1,9 @@
 class User
-  attr_reader :email, :password, :name, :first_name, :last_name, :street_address, :secondary_address, :city, :state, :zip, :phone, :mobile
+  attr_reader :email, :password, :name, :first_name, :last_name, :house_number, :street, :city, :state, :zip, :phone
 
   def initialize
     @email        = Faker::Internet.unique.safe_email
-    @password     = ENV['PASSWORD_SPREE']
+    @password     = Faker::Internet.password
 
     @name         = Faker::Name.name
     @first_name   = Faker::Name.first_name
@@ -15,5 +15,18 @@ class User
     @state        = Faker::Address.state
     @zip          = Faker::Address.zip
     @phone        = Faker::PhoneNumber.phone_number
+  end
+
+  def to_hash
+    {
+      first_name: @first_name,
+      last_name: @last_name,
+      house_number: @house_number,
+      street: @street,
+      city: @city,
+      state: @state,
+      zip: @zip,
+      phone: @phone
+    }
   end
 end

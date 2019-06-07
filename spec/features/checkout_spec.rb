@@ -1,18 +1,19 @@
 # frozen_string_literal: true
 
-RSpec.feature 'shopping_cart' do
-  let(:credentials) { Credentials.new }
-  let(:address)     { Address.new }
-  let(:address2)    { Address.new }
+RSpec.feature 'Checkout' do
+  let(:user)   { User.new }
+  let(:user2)  { User.new }
+  let(:router) { Router.new }
 
   before do
-    add_to_cart('/products/ruby-on-rails-bag')
-    add_to_cart('/products/ruby-on-rails-tote')
-    click_button 'Checkout'
+    add_to_cart(router.pdp_path)
+    add_to_cart(router.pdp2_path)
+
+    click_on 'Checkout'
   end
 
   describe 'New Account' do
-    before { proceed_as_new_user(credentials) }
+    before { proceed_as_new_user(user) }
 
     it_behaves_like 'Address step'
 
@@ -21,12 +22,10 @@ RSpec.feature 'shopping_cart' do
     it_behaves_like 'Payment step'
 
     it_behaves_like 'Confirmation step'
-
-    it_behaves_like 'Can edit on Confirmation step'
   end
 
   describe 'Guest' do
-    before { proceed_as_guest(credentials) }
+    before { proceed_as_guest(user) }
 
     it_behaves_like 'Address step'
 
@@ -35,7 +34,5 @@ RSpec.feature 'shopping_cart' do
     it_behaves_like 'Payment step'
 
     it_behaves_like 'Confirmation step'
-
-    it_behaves_like 'Can edit on Confirmation step'
   end
 end

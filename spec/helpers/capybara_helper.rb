@@ -16,6 +16,8 @@ Capybara.configure do |config|
   end
 end
 
+ShowMeTheCookies.register_adapter(ENV['BROWSER'].to_sym, ShowMeTheCookies::Selenium)
+
 Capybara::Screenshot.register_driver(ENV['BROWSER'].to_sym) do |driver, path|
   driver.browser.save_screenshot(path)
 end
